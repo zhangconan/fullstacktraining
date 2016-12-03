@@ -56,6 +56,7 @@ public class SalaryTest {
         }
     }
 
+
     /**
      * 因为java中没有引用传递，所有的都是值传递。所以这里对两个对象进行重新赋值
      * @param src
