@@ -1,8 +1,6 @@
 package com.zkn.fullstacktraining.first;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by zkn on 2016/12/4.

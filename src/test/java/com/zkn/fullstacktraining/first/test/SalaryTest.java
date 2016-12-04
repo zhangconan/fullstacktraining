@@ -1,5 +1,6 @@
 package com.zkn.fullstacktraining.first.test;
 
+import com.zkn.fullstacktraining.first.QuickSortSalaryTest;
 import com.zkn.fullstacktraining.first.Salary;
 import org.junit.Test;
 import java.util.*;
@@ -23,12 +24,16 @@ public class SalaryTest {
             salary.setName(RandomString.getRamdomString(5));
             salaryList.add(salary);
         }
+        List<Salary> salaryList1 = new ArrayList<>(salaryList);
+        List<Salary> salaryList2 = new ArrayList<>(salaryList);
         Collections.sort(salaryList, new SalaryComparator());
         for(int i=0;i<10;i++){
             System.out.println(salaryList.get(i).toString());
         }
         System.out.println("开始冒泡排序了。。。。");
-        testBubbleSort(salaryList);
+        testBubbleSort(salaryList1);
+        System.out.println("开始快速排序了。。。。");
+        QuickSortSalaryTest.quickSort(salaryList2);
     }
     /**
      * 冒泡排序
