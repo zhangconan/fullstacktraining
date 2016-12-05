@@ -17,7 +17,7 @@ public class ByteCaculator {
     public static void main(String[] args) {
         byte aa = 127;
         System.out.println(Byte.MAX_VALUE);
-        byte bb = (byte)(aa << 8);
+        byte bb = (byte)(aa << 2);
         System.out.println(bb);
     }
     //int转换成数组
