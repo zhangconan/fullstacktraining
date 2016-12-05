@@ -1,8 +1,6 @@
 package com.zkn.fullstacktraining.first;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by wb-zhangkenan on 2016/12/5.
@@ -47,11 +45,12 @@ public class ByteStore {
         List<MyItem> myItemList = new ArrayList<MyItem>(1000);
         Random random = new Random();
         MyItem myItem = null;
-        for(int i=0;i<10000;i++){
+        for(int i=0;i<1000;i++){
             byte[] bytes = new byte[3];
             //为上面的字节数组填充随机值
             random.nextBytes(bytes);
             myItem = new MyItem(bytes[0],bytes[1],bytes[2]);
+            System.out.println(myItem.getAllFields());
             myItemList.add(myItem);
             //将MyItem中的属性值用字节数组表示
             byteStore.putMyItem(i,myItem);
@@ -61,9 +60,11 @@ public class ByteStore {
             System.out.println(byteStore.getMyItem(i).getAllFields());
             System.out.println(myItemList.get(i).equals(byteStore.getMyItem(i)));
             System.out.println("原先的对象："+myItemList.get(i));
-            System.out.println("getMyItem返回的对象："+myItemList.get(i));
+            System.out.println("getMyItem返回的对象："+byteStore.getMyItem(i));
         }
-        //从上面的结果可以看出来，getMyItem方法返回的这些对象虽然和与之前放入的对象的属性值都一样，
-        // 但是他们不是同一个对象。因为
+        Collections.sort(myItemList);
+        for(int i=0;i<100;i++){
+            System.out.println(myItemList.get(i).getAllFields());
+        }
     }
 }
