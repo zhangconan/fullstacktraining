@@ -10,7 +10,7 @@ package com.zkn.fullstacktraining.first;
  * fload类型：32位4个字节
  * long类型：64位8个字节
  * double类型：64位8个字节
- * int强制转换成byte的原理是：保留最低的八位，取反再+1
+ * int强制转换成byte的原理是：保留最低的八位，符号位不变，取反再+1
  */
 public class ByteCaculator {
 

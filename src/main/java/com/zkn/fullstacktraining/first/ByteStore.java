@@ -8,8 +8,9 @@ import java.util.*;
  */
 public class ByteStore {
 
-    private byte[] storeByteArrys = new byte[3000];
+    private byte[] storeByteArrays = new byte[3000];
 
+    private int[] storeIntArrays = new int[1000];
     /**
      *将MyItem中的元素用字节数组来表示
      * @param index
@@ -19,13 +20,13 @@ public class ByteStore {
         if(index < 0 || index >= 1000)
             return;
         int multiply3Index = index*3;
-        storeByteArrys[multiply3Index] = myItem.getType();
-        storeByteArrys[multiply3Index+1] = myItem.getColor();
-        storeByteArrys[multiply3Index+2] = myItem.getPrice();
+        storeByteArrays[multiply3Index] = myItem.getType();
+        storeByteArrays[multiply3Index+1] = myItem.getColor();
+        storeByteArrays[multiply3Index+2] = myItem.getPrice();
     }
 
     public byte[] getStoreByteArrys() {
-        return storeByteArrys;
+        return storeByteArrays;
     }
 
     /**
@@ -34,8 +35,29 @@ public class ByteStore {
      * @return
      */
     public MyItem getMyItem(int index){
+        if(index < 0 || index > 1000)
+            return new MyItem();
         int multiply3Index = index*3;
-        MyItem myItem = new MyItem(storeByteArrys[multiply3Index],storeByteArrys[multiply3Index+1],storeByteArrys[multiply3Index+2]);
+        MyItem myItem = new MyItem(storeByteArrays[multiply3Index],storeByteArrays[multiply3Index+1],storeByteArrays[multiply3Index+2]);
+        return myItem;
+    }
+    //int是4个字节 32位 一个int可以用来表示 4个byte
+    //0xff 是 1111 1111 和byte(与) & 的时候 所得到的结果是 byte原值的大小
+    //即任何byte值和0xff与(&)，值不变
+    //0 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0  0 0 1 0 0 0 0 0  0 0 0 0 0 0 0 0
+    public void putMyItemInt(int index,MyItem myItem){
+        if(index < 0 || index > 1000)
+            return;
+        storeIntArrays[index] = myItem.getType() & 0xff | (myItem.getColor() & 0xff) << 8 | (myItem.getPrice() & 0xff ) << 16;
+    }
+
+    public MyItem getMyItemInt(int index){
+        if(index < 0 || index > 1000)
+            return new MyItem();
+        MyItem myItem = new MyItem();
+        myItem.setType((byte)(storeIntArrays[index] & 0xff));
+        myItem.setColor((byte)((storeIntArrays[index] >> 8) & 0xff));
+        myItem.setPrice((byte)((storeIntArrays[index] >> 16) & 0xff));
         return myItem;
     }
 
