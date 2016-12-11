@@ -56,8 +56,8 @@ public class ByteStore {
             return new MyItem();
         MyItem myItem = new MyItem();
         myItem.setType((byte)(storeIntArrays[index] & 0xff));
-        myItem.setColor((byte)((storeIntArrays[index] >> 8) & 0xff));
-        myItem.setPrice((byte)((storeIntArrays[index] >> 16) & 0xff));
+        myItem.setColor((byte)((storeIntArrays[index] >>> 8) & 0xff));
+        myItem.setPrice((byte)((storeIntArrays[index] >>> 16) & 0xff));
         return myItem;
     }
 
