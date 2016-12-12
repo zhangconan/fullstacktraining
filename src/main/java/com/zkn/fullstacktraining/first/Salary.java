@@ -51,4 +51,9 @@ public class Salary {
 
         return "姓名：" + name +" 工资："+getResult();
     }
+
+    public String getFileLine(){
+
+        return name+","+baseSalary+","+bonus;
+    }
 }
