@@ -6,13 +6,17 @@ import java.util.Arrays;
 
 /**
  * Created by zkn on 2016/12/11.
+ * 在计算机系统中，数值一律用补码来表示和存储。
+ * 一个负整数（或原码）与其补数（或补码）相加，和为模。
+ * 对一个整数的补码再求补码，等于该整数自身。
+ * 补码的正零与负零表示方法相同。
  */
 public class ByteTransformationIntTest {
 
     @Test
     public void byteTransformationInt(){
 
-        int temp = 579;
+        int temp = 255;
         byte[] bytes = new byte[4];
         putInt(bytes,temp);//用一个长度为4的数组表示一个整型
         System.out.println(getInt(bytes));//从长度为4的数组中还原放入的整型
