@@ -4,6 +4,7 @@ import com.zkn.fullstacktraining.util.StringUtils;
 
 /**
  * Created by wb-zhangkenan on 2016/12/13.
+ * 字符转换大写
  */
 public class DecorateOutputStringToUpperCase extends DecorateOutputString {
 
@@ -19,9 +20,11 @@ public class DecorateOutputStringToUpperCase extends DecorateOutputString {
         if(!StringUtils.isEmpty(str)){
             System.out.println("字符串大写转换："+str);
             str.toUpperCase();
-            return super.processString(str);
+            System.out.println("字符串大写转换之后:"+str);
+            return outputString.processString(str);
         }else{
             return null;
         }
     }
+
 }

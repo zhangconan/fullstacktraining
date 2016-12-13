@@ -4,6 +4,7 @@ import com.zkn.fullstacktraining.util.StringUtils;
 
 /**
  * Created by wb-zhangkenan on 2016/12/13.
+ * 字符串翻转
  */
 public class DecorateOutputStringReverse extends DecorateOutputString {
 
@@ -17,9 +18,12 @@ public class DecorateOutputStringReverse extends DecorateOutputString {
     public String processString(String str) {
         if(!StringUtils.isEmpty(str)){
             System.out.println("反转字符串:"+str);
-            return super.processString(str);
+            str = new StringBuilder(str).reverse().toString();
+            System.out.println("反转字符串之后:"+str);
+            return outputString.processString(str);
         }else{
             return null;
         }
     }
+
 }

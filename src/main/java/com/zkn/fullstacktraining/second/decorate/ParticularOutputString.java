@@ -5,8 +5,6 @@ package com.zkn.fullstacktraining.second.decorate;
  */
 public class ParticularOutputString implements OutputString{
 
-    private OutputString outputString;
-
     /**
      * 处理字符串
      * @param str
@@ -14,13 +12,7 @@ public class ParticularOutputString implements OutputString{
      */
     @Override
     public String processString(String str) {
-
-        System.out.println("处理前的字符串:"+str);
-        return outputString.processString(str);
-    }
-
-    public ParticularOutputString(OutputString outputString) {
-
-        this.outputString = outputString;
+        System.out.println("最终的结果："+str);
+        return str;
     }
 }
