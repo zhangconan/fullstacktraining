@@ -2,10 +2,14 @@ package com.zkn.fullstacktraining.second;
 
 import com.zkn.fullstacktraining.first.RandomString;
 import com.zkn.fullstacktraining.first.Salary;
+import com.zkn.fullstacktraining.util.StringUtils;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 
 /**
  * Created by zkn on 2016/12/12.
@@ -20,19 +24,43 @@ public class SalaryFile01 {
 
     public static void main(String[] args){
         Salary[] salaries = getSalary();
-        OutputStreamWriter osw = null;
+        BufferedWriter bufferedWriter = null;
         LineNumberReader lnr = null;
         try {
-            osw = new OutputStreamWriter(new FileOutputStream("G:\\LearnVideo\\text.txt"),"utf-8");
-            for(int i=0;i<salaries.length;i++){
-                osw.write(salaries[i].getFileLine());
-                osw.write("\r");
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("D:\\LearnVideo\\text.txt"),"utf-8")) ;
+            for(int i=0;i<2000;i++){
+                bufferedWriter.write(salaries[i].getFileLine());
+                bufferedWriter.newLine();
             }
-            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("G:\\LearnVideo\\text.txt"),"utf-8"));
+            bufferedWriter.flush();
+            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
             String str = null;
-            lnr.lines().filter(line -> line == "" ).map(line -> line.split(",")).
-                    map((str1) -> (str1[0].substring(0,2)+" , "+(Integer.parseInt(str1[1])+Integer.parseInt(str1[2])))).
-                    sorted().limit(20).forEach(System.out::println);
+            Map<String,Map<Long,Integer>> totalMap = new HashMap<String,Map<Long,Integer>>();
+            int i = 0;
+            while(lnr.getLineNumber() >= i){
+                i++;
+                str = lnr.readLine();
+                if(!StringUtils.isEmpty(str)){
+                    String[] strs = str.split(",");
+                    String tmpStr = strs[0].substring(0,1);
+                    if(totalMap.get(tmpStr) != null){
+                        Map<Long,Integer> tmpMap = totalMap.get(tmpStr);
+                        tmpMap.forEach((key,value)->{key += (Long.parseLong(strs[1])+Long.parseLong(strs[2]));value+=1;});
+                        totalMap.put(tmpStr,tmpMap);
+                    }else{
+                        totalMap.put(tmpStr,new HashMap<Long,Integer>(){{put(Long.parseLong(strs[1])+Long.parseLong(strs[2]),1);}});
+                    }
+                }
+            }
+            for(Map.Entry<String,Map<Long,Integer>> entry : totalMap.entrySet()){
+                String tmpStr = entry.getKey();
+                Map<Long,Integer> map = entry.getValue();
+                for(Map.Entry<Long,Integer> tmpEntry : map.entrySet()){
+                    //if(tmpEntry.getValue() > 1){
+                        System.out.println(tmpStr+ " "+tmpEntry.getKey()+" "+tmpEntry.getValue());
+                    //}
+                }
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -40,9 +68,9 @@ public class SalaryFile01 {
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
-            if(osw != null){
+            if(bufferedWriter != null){
                 try {
-                    osw.close();
+                    bufferedWriter.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
