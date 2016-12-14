@@ -5,10 +5,7 @@ import com.zkn.fullstacktraining.first.Salary;
 import com.zkn.fullstacktraining.util.StringUtils;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -27,13 +24,13 @@ public class SalaryFile01 {
         BufferedWriter bufferedWriter = null;
         LineNumberReader lnr = null;
         try {
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("D:\\LearnVideo\\text.txt"),"utf-8")) ;
-            for(int i=0;i<2000;i++){
-                bufferedWriter.write(salaries[i].getFileLine());
-                bufferedWriter.newLine();
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("G:\\LearnVideo\\text.txt"),"utf-8")) ;
+            for(int i=0;i<10000000;i++){
+                bufferedWriter.write(salaries[i].getFileLine());//写入记录数据
+                bufferedWriter.newLine();//换行
             }
             bufferedWriter.flush();
-            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
+            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("G:\\LearnVideo\\text.txt"),"utf-8"));
             String str = null;
             Map<String,Map<Long,Integer>> totalMap = new HashMap<String,Map<Long,Integer>>();
             int i = 0;
@@ -42,24 +39,39 @@ public class SalaryFile01 {
                 str = lnr.readLine();
                 if(!StringUtils.isEmpty(str)){
                     String[] strs = str.split(",");
-                    String tmpStr = strs[0].substring(0,1);
+                    String tmpStr = strs[0].substring(0,2);
                     if(totalMap.get(tmpStr) != null){
-                        Map<Long,Integer> tmpMap = totalMap.get(tmpStr);
-                        tmpMap.forEach((key,value)->{key += (Long.parseLong(strs[1])+Long.parseLong(strs[2]));value+=1;});
-                        totalMap.put(tmpStr,tmpMap);
+                        Map<Long,Integer> oldMap = totalMap.get(tmpStr);
+                        Map<Long,Integer> tmpMap = new HashMap<Long,Integer>();
+                        for(Map.Entry<Long,Integer> entry : oldMap.entrySet()){
+                            tmpMap.put(entry.getKey()+Long.parseLong(strs[1])+Long.parseLong(strs[2]),entry.getValue()+1);
+                        }
+                        oldMap = null;//让GC回收
+                        totalMap.put(tmpStr,tmpMap);//放入新值
                     }else{
                         totalMap.put(tmpStr,new HashMap<Long,Integer>(){{put(Long.parseLong(strs[1])+Long.parseLong(strs[2]),1);}});
                     }
                 }
             }
+            Map<String,Long> tmpMap = new HashMap<String,Long>();
             for(Map.Entry<String,Map<Long,Integer>> entry : totalMap.entrySet()){
                 String tmpStr = entry.getKey();
                 Map<Long,Integer> map = entry.getValue();
                 for(Map.Entry<Long,Integer> tmpEntry : map.entrySet()){
-                    //if(tmpEntry.getValue() > 1){
-                        System.out.println(tmpStr+ " "+tmpEntry.getKey()+" "+tmpEntry.getValue());
-                    //}
+                    tmpMap.put(tmpStr,tmpEntry.getKey());
                 }
+            }
+            List<Map.Entry<String,Long>> tmpList = new ArrayList<Map.Entry<String,Long>>(tmpMap.entrySet());
+            Collections.sort(tmpList, new Comparator<Map.Entry<String, Long>>() {
+                @Override
+                public int compare(Map.Entry<String, Long> o1, Map.Entry<String, Long> o2) {
+
+                    return o1.getValue().longValue() > o2.getValue().longValue()? -1: 1;
+                }
+            });
+            for(int j=0;j<10;j++){
+                Map.Entry<String,Long> mapEntry = tmpList.get(j);
+                System.out.println(mapEntry.getKey() +" , "+ (mapEntry.getValue()/10000)+" 万  " + totalMap.get(mapEntry.getKey()).get(mapEntry.getValue())+"个人");
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

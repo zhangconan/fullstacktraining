@@ -18,7 +18,7 @@ public class DecorateOutputStringToLowerCase extends DecorateOutputString{
     public String processString(String str) {
         if(!StringUtils.isEmpty(str)){
             System.out.println("小写转换字符串:"+str);
-            str.toLowerCase();
+            str = str.toLowerCase();
             System.out.println("小写转换字符串之后:"+str);
             return outputString.processString(str);
         }else{

@@ -19,7 +19,7 @@ public class DecorateOutputStringToUpperCase extends DecorateOutputString {
 
         if(!StringUtils.isEmpty(str)){
             System.out.println("字符串大写转换："+str);
-            str.toUpperCase();
+            str = str.toUpperCase();
             System.out.println("字符串大写转换之后:"+str);
             return outputString.processString(str);
         }else{
