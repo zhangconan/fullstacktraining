@@ -25,11 +25,11 @@ public class SalaryFile02 {
                 String tmpStr = tmpStrArr[0].substring(0,2);
                 if(salaryMap.get(tmpStr) != null){
                     SalaryAssistScope temSalary = salaryMap.get(tmpStr);
-                    temSalary.setSalaryTotal(temSalary.getSalaryTotal()+Long.parseLong(tmpStrArr[1])+Long.parseLong(tmpStrArr[2]));
+                    temSalary.setSalaryTotal(temSalary.getSalaryTotal()+Long.parseLong(tmpStrArr[1])*13+Long.parseLong(tmpStrArr[2]));
                     temSalary.setCount(temSalary.getCount()+1);
                 }else{
                     salaryMap.put(tmpStr,new SalaryAssistScope(tmpStr,
-                            Long.parseLong(tmpStrArr[1])+Long.parseLong(tmpStrArr[2]),1));
+                            Long.parseLong(tmpStrArr[1])*13+Long.parseLong(tmpStrArr[2]),1));
                 }
             }
             PriorityQueue<SalaryAssistScope> priorityQueue = new PriorityQueue<SalaryAssistScope>(10);

@@ -3,6 +3,7 @@ package com.zkn.fullstacktraining.first.test;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 /**
  * Created by wb-zhangkenan on 2016/12/13.
@@ -29,4 +30,11 @@ public class StringCodeTest {
         String str = "qweerr";
         System.out.println(str.substring(0,str.length()));
     }
+
+    @Test
+    public void testStringCode(){
+        String str = "ab";
+        System.out.println(Arrays.toString(str.getBytes()));
+    }
+
 }

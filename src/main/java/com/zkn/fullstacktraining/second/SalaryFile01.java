@@ -44,12 +44,12 @@ public class SalaryFile01 {
                         Map<Long,Integer> oldMap = totalMap.get(tmpStr);
                         Map<Long,Integer> tmpMap = new HashMap<Long,Integer>();
                         for(Map.Entry<Long,Integer> entry : oldMap.entrySet()){
-                            tmpMap.put(entry.getKey()+Long.parseLong(strs[1])+Long.parseLong(strs[2]),entry.getValue()+1);
+                            tmpMap.put(entry.getKey()+Long.parseLong(strs[1])*13+Long.parseLong(strs[2]),entry.getValue()+1);
                         }
                         oldMap = null;//让GC回收
                         totalMap.put(tmpStr,tmpMap);//放入新值
                     }else{
-                        totalMap.put(tmpStr,new HashMap<Long,Integer>(){{put(Long.parseLong(strs[1])+Long.parseLong(strs[2]),1);}});
+                        totalMap.put(tmpStr,new HashMap<Long,Integer>(){{put(Long.parseLong(strs[1])*13+Long.parseLong(strs[2]),1);}});
                     }
                 }
             }
