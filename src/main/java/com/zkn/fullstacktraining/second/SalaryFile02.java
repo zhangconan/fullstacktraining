@@ -17,7 +17,7 @@ public class SalaryFile02 {
         //安行读取文件
         LineNumberReader lnr = null;
         try{
-            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
+            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("G:\\LearnVideo\\text.txt"),"utf-8"));
             String str = null;
             Map<String,SalaryAssistScope> salaryMap = new HashMap<String,SalaryAssistScope>();
             while((str=lnr.readLine()) != null){

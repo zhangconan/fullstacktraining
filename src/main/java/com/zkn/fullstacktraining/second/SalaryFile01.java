@@ -17,20 +17,18 @@ import java.util.function.Function;
  */
 public class SalaryFile01 {
 
-    private static Random random = new Random();
-
     public static void main(String[] args){
-        Salary[] salaries = getSalary();
+        Salary[] salaries = GenSalary.getSalary();
         BufferedWriter bufferedWriter = null;
         LineNumberReader lnr = null;
         try {
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("D:\\LearnVideo\\text.txt"),"utf-8")) ;
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("G:\\LearnVideo\\text.txt"),"utf-8")) ;
             for(int i=0;i<10000000;i++){
                 bufferedWriter.write(salaries[i].getFileLine());//写入记录数据
                 bufferedWriter.newLine();//换行
             }
             bufferedWriter.flush();
-            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
+            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("G:\\LearnVideo\\text.txt"),"utf-8"));
             String str = null;
             Map<String,Map<Long,Integer>> totalMap = new HashMap<String,Map<Long,Integer>>();
             int i = 0;
@@ -90,15 +88,4 @@ public class SalaryFile01 {
         }
     }
 
-    public static Salary[] getSalary(){
-        Salary[] salaries = new Salary[10000000];
-        for(int i=0;i<salaries.length;i++){
-            Salary salary = new Salary();
-            salary.setName(RandomString.getRamdomString(5));
-            salary.setBaseSalary(random.nextInt(10000000));
-            salary.setBonus(random.nextInt(10000000));
-            salaries[i] = salary;
-        }
-        return salaries;
-    }
 }

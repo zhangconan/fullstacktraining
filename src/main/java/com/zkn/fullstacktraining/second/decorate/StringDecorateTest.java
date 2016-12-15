@@ -25,9 +25,9 @@ public class StringDecorateTest {
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入一段内容：");
         String strNew = scanner.nextLine();
-        System.out.println("请输入要进行的操作的数字,按exit退出.");
+        System.out.println("请输入要进行的操作的数字.");
         System.out.println("1：字符串加密");
-        System.out.println("2：字符串反正");
+        System.out.println("2：字符串反转");
         System.out.println("3：字符串截取");
         System.out.println("4：字符串小写");
         System.out.println("5：字符串大写");
