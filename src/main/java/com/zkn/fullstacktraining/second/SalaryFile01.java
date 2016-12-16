@@ -22,13 +22,16 @@ public class SalaryFile01 {
         BufferedWriter bufferedWriter = null;
         LineNumberReader lnr = null;
         try {
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("G:\\LearnVideo\\text.txt"),"utf-8")) ;
-            for(int i=0;i<10000000;i++){
+            long startTime = System.currentTimeMillis();
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("D:\\LearnVideo\\text.txt"),"utf-8")) ;
+            for(int i=0;i<salaries.length;i++){
                 bufferedWriter.write(salaries[i].getFileLine());//写入记录数据
                 bufferedWriter.newLine();//换行
             }
             bufferedWriter.flush();
-            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("G:\\LearnVideo\\text.txt"),"utf-8"));
+            System.out.println("写入耗时："+(System.currentTimeMillis()-startTime));
+            startTime = System.currentTimeMillis();
+            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
             String str = null;
             Map<String,Map<Long,Integer>> totalMap = new HashMap<String,Map<Long,Integer>>();
             int i = 0;
@@ -71,6 +74,7 @@ public class SalaryFile01 {
                 Map.Entry<String,Long> mapEntry = tmpList.get(j);
                 System.out.println(mapEntry.getKey() +" , "+ (mapEntry.getValue()/10000)+" 万  " + totalMap.get(mapEntry.getKey()).get(mapEntry.getValue())+"个人");
             }
+            System.out.println("不借助辅助类耗时:"+(System.currentTimeMillis()-startTime));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {

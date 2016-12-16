@@ -17,7 +17,8 @@ public class SalaryFile02 {
         //安行读取文件
         LineNumberReader lnr = null;
         try{
-            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("G:\\LearnVideo\\text.txt"),"utf-8"));
+            long startTime = System.currentTimeMillis();
+            lnr = new LineNumberReader(new InputStreamReader(new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
             String str = null;
             Map<String,SalaryAssistScope> salaryMap = new HashMap<String,SalaryAssistScope>();
             while((str=lnr.readLine()) != null){
@@ -39,6 +40,7 @@ public class SalaryFile02 {
             for(int i=0;i<10;i++){
                 System.out.println(priorityQueue.poll());
             }
+            System.out.println("借助辅助类读取耗时："+(System.currentTimeMillis()-startTime));
         }catch (Exception e){
             e.fillInStackTrace();
         }finally {
