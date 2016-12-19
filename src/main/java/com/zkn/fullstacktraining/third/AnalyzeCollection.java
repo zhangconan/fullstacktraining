@@ -39,7 +39,7 @@ public class AnalyzeCollection {
      *      6、ArrayList实现了RandomAccess接口（随机存取接口）。RandomAccess和Cloneable、Serializable一样，是一个标志性接口，不需要任何实现。
      *          只是用来表明其实现类具有某种特质的。实现了Cloneable表明可以被拷贝（浅拷贝），实现了Serializable接口表明可以被序列化，
      *          实现了RandomAccess接口则表明这个类是可以随机存取的。对我们的ArrayList来说也就标志着其数据元素之间没有关联。即两个位置相邻的元素之间没有
-     *
+     *          相互依赖和索引关系，可以随机访问和存储。
      *      7、遍历ArrayList最好使用下标的方式进行遍历。java中的foreach语法是iterator（迭代器）的变形用法。在使用迭代器的是就需要强制建立一种互相“知晓”
      *          的关系，比如上一个元素可以判断是否有下一个元素，以及下一个元素是什么等关系。对于随机存取的ArrayList这是一个很耗时的过程。
      *      8、LinkedList是一个双向链表的结构。它内部定义了一个Node节点类，来实现双向链表。
@@ -136,7 +136,6 @@ public class AnalyzeCollection {
      *      33、ConcurrentLinkedDeque是一个线程安全的双向链表队列。
      *      34、TransferQueue生产者会一直阻塞直到所添加到队列的元素被某一个消费者所消费（不仅仅是添加到队列里就完事）。新添加的transfer方法用来实现这种约束。
      *          阻塞就是发生在元素从一个线程transfer到另一个线程的过程中，它有效地实现了元素在线程之间的传递（以建立Java内存模型中的happens-before关系的方式）
-     *
      *      34、SynchronousQueue一种阻塞队列，其中每个插入操作必须等待另一个线程的对应移除操作 ，反之亦然。同步队列没有任何内部容量，甚至连一个队列的容量都没有。
      *          不能在同步队列上进行peek，因为仅在试图要移除元素时，该元素才存在；除非另一个线程试图移除某个元素，否则也不能（使用任何方法）插入元素；
      *          也不能迭代队列，因为其中没有元素可用于迭代。队列的头 是尝试添加到队列中的首个已排队插入线程的元素；如果没有这样的已排队线程，
@@ -145,7 +144,24 @@ public class AnalyzeCollection {
      *     35、SynchronousQueue的队列长度为0。常用于两个线程之间传递元素。
      *     36、LinkedTransferQueue实际上是ConcurrentLinkedQueue、SynchronousQueue（公平模式）和LinkedBlockingQueue的超集。而且
      *          LinkedTransferQueue更好用，因为它不仅仅综合了这几个类的功能，同时也提供了更高效的实现。
-     *
+     *     37、LinkedTransferQueue实现了一个重要的接口TransferQueue,该接口含有下面几个重要方法：
+     *           1）transfer(E e)
+     *           若当前存在一个正在等待获取的消费者线程，即立刻移交之；否则，会插入当前元素e到队列尾部，并且等待进入阻塞状态，到有消费者线程取走该元素。
+     *           2）tryTransfer(E e)
+     *           若当前存在一个正在等待获取的消费者线程（使用take()或者poll()函数），使用该方法会即刻转移/传输对象元素e；若不存在，则返回false，并且
+     *           不进入队列。这是一个不阻塞的操作。
+     *           3）tryTransfer(E e, long timeout, TimeUnit unit)
+     *           若当前存在一个正在等待获取的消费者线程，会立即传输给它; 否则将插入元素e到队列尾部，并且等待被消费者线程获取消费掉,若在指定的时间内元素e
+     *           无法被消费者线程获取，则返回false，同时该元素被移除。
+     *           4） hasWaitingConsumer()
+     *           判断是否存在消费者线程
+     *           5） getWaitingConsumerCount()
+     *           获取所有等待获取元素的消费线程数量
+     *     38、DelayQueue是一个无界阻塞队列，只有在延迟期满时才能从中提取元素。该队列的头部是延迟期满后保存时间最长的Delayed元素。如果延迟都还没有期满，
+     *          则队列没有头部，并且poll将返回null。当一个元素的getDelay(TimeUnit.NANOSECONDS)方法返回一个小于等于0的值时，将发生到期。即使无法使用
+     *          take或poll移除未到期的元素，也不会将这些元素作为正常元素对待。例如，size方法同时返回到期和未到期元素的计数。此队列不允许使用null元素。
+     *      参考：http://chenzehe.iteye.com/blog/1831332
+     *           http://www.tuicool.com/articles/meYnUrj
      */
 }
 
