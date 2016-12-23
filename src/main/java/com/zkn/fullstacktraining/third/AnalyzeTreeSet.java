@@ -1,5 +1,10 @@
 package com.zkn.fullstacktraining.third;
 
+import com.zkn.fullstacktraining.first.Salary;
+
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * Created by zkn on 2016/12/20.
  * TreeSet继承了什么Set，与HashSet的区别是？HashSet与HashTable是“一脉相承”的么？
