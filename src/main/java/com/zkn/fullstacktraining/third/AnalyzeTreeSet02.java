@@ -1,9 +1,7 @@
 package com.zkn.fullstacktraining.third;
 
 import com.zkn.fullstacktraining.first.Salary;
-
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by wb-zhangkenan on 2016/12/23.
@@ -13,8 +11,14 @@ public class AnalyzeTreeSet02 {
 
     /**
      * TreeSet放入自定义对象需要实现hashCode和equals、compareTo方法。
-     * 因为TreeSet中的元素都是有序的，所以
-     * TreeSet中的元素都必须实现Comparable接口（或者被指定的比较器所接受）。另外，所有这些元素都必须是可互相比较的。
+     * TreeSet的底层是用TreeMap实现的。因为TreeSet中的元素都是有序的，所以TreeSet中的元素要么实现Comparable接口要么被指定的比较器所接受。
+     * 所有这些元素都必须是可互相比较的。
+     *      final int compare(Object k1, Object k2) {
+     *           return comparator==null ? ((Comparable<? super K>)k1).compareTo((K)k2)
+     *           : comparator.compare((K)k1, (K)k2);
+     *       }
+     * 所以，如果你在构造函数时没有指定比较器，则需要实现Comparable接口，实现compareTo方法。
+     *      如果指定的比较器没有和你的自定义类没有关系的话,则结果可能会不符合预期，或者编译不通过。
      */
     public static void main(String[] args){
         Set<Salary> salarySet = new TreeSet<>();
@@ -22,12 +26,19 @@ public class AnalyzeTreeSet02 {
         salary.setName("zhangsan");
         salarySet.add(salary);
         Salary salary01 = new Salary();
-        salary01.setName("zhangsan");
+        salary01.setName("zhangsan01");
         salarySet.add(salary01);
         Salary salary02 = new Salary();
-        salary02.setName("zhangsan");
+        salary02.setName("zhangsan001");
         salarySet.add(salary02);
+        System.out.println(Arrays.toString(salarySet.toArray(new Salary[0])));
+    }
+    private static class SalaryComparator implements Comparator<PersonDomain>{
 
-        System.out.println(salarySet.toArray(new Salary[0]));
+        @Override
+        public int compare(PersonDomain o1, PersonDomain o2) {
+
+            return o1.getName().length() > o2.getName().length() ? 1 : -1;
+        }
     }
 }
