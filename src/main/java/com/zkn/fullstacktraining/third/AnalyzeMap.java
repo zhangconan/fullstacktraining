@@ -97,7 +97,7 @@ public class AnalyzeMap {
      *      HashTable:
      *          Hashtable是线程安全的.
      *          Hashtable的键值不能为空。
-     *          Hashtable的enumerator迭代器不是fail-fast的.(这里可以写两个线程进行测试一下，一个线程用来循环，一个线程用来put元素).
+     *          Hashtable的enumerator迭代器不是fail-fast 的.(这里可以写两个线程进行测试一下，一个线程用来循环，一个线程用来put元素).
      *      LinkedHashMap:
      *          Map接口的哈希表和链接列表实现，具有可预知的迭代顺序。此实现与HashMap的不同之处在于，后者维护着一个运行于所有条目的双重链接列表。
      *          此链接列表定义了迭代顺序，该迭代顺序通常就是将键插入到映射中的顺序（插入顺序）。注意，如果在映射中重新插入 键，则插入顺序不受影响。
