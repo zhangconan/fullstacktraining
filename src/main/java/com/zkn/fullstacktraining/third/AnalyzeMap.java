@@ -97,7 +97,7 @@ public class AnalyzeMap {
      *      HashTable:
      *          Hashtable是线程安全的.
      *          Hashtable的键值不能为空。
-     *          Hashtable的enumerator迭代器不是fail-fast的.(这里可以写两个线程进行测试一下，一个线程用来循环，一个线程用来put元素).
+     *          Hashtable的enumerator迭代器不是fail-fast 的.(这里可以写两个线程进行测试一下，一个线程用来循环，一个线程用来put元素).
      *      LinkedHashMap:
      *          Map接口的哈希表和链接列表实现，具有可预知的迭代顺序。此实现与HashMap的不同之处在于，后者维护着一个运行于所有条目的双重链接列表。
      *          此链接列表定义了迭代顺序，该迭代顺序通常就是将键插入到映射中的顺序（插入顺序）。注意，如果在映射中重新插入 键，则插入顺序不受影响。
@@ -115,5 +115,11 @@ public class AnalyzeMap {
      *          此类的典型用法是拓扑保留对象图形转换，如序列化或深层复制。
      *          此类的另一种典型用法是维护代理对象。例如，调试设施可能希望为正在调试程序中的每个对象维护代理对象。
      *          此类提供所有的可选映射操作，并且允许 null 值和 null 键。此类对映射的顺序不提供任何保证；特别是不保证顺序随时间的推移保持不变。
+     *      Bindings:
+     *          key都是String的类。
+     *      Properties：
+     *          Properties 类表示了一个持久的属性集。Properties可保存在流中或从流中加载。属性列表中每个键及其对应值都是一个字符串。
+     *
+     *
      */
 }
