@@ -53,6 +53,9 @@ public class SalaryAssistScope implements Comparable<SalaryAssistScope>{
         this.count = count;
     }
 
+    public SalaryAssistScope() {
+    }
+
     @Override
     public String toString() {
 
