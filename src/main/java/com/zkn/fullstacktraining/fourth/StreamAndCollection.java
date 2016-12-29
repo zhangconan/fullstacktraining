@@ -2,6 +2,7 @@ package com.zkn.fullstacktraining.fourth;
 
 /**
  * Created by wb-zhangkenan on 2016/12/26.
+ * 说明Stream与Collection的区别 以及关系
  */
 public class StreamAndCollection {
 

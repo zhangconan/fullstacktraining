@@ -14,7 +14,6 @@ public class TreeSetTest {
     @Test
     public void testSetNull(){
         Set<String> set = new TreeSet<String>();
-        set.add(null);
         set.add("zhangsan");
         System.out.println(Arrays.toString(set.toArray()));
     }

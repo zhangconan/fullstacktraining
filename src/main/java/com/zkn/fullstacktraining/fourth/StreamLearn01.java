@@ -1,10 +1,10 @@
 package com.zkn.fullstacktraining.fourth;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
  * Created by wb-zhangkenan on 2016/12/28.
+ * 下面代码为什么输出流中的每个元素2遍
  */
 public class StreamLearn01 {
 
