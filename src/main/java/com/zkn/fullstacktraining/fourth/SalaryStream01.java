@@ -31,11 +31,11 @@ public class SalaryStream01 {
                     .filter(salary->salary.getSalaryTotal()>100000)//过滤掉不符合条件的数据
                     .collect(Collectors.groupingBy(salary->salary.getName()))
                     .entrySet()
-                    .stream()
+                    .stream().parallel()
                     .map(str->function.apply(str.getValue()))
                     .sorted((s1,s2)->Long.compare(s2.getSalaryTotal(),s1.getSalaryTotal()))
                     .limit(10)
-                    .forEach(salaryAssistScope -> System.out.println(salaryAssistScope));
+                    .forEachOrdered(salaryAssistScope -> System.out.println(salaryAssistScope));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
