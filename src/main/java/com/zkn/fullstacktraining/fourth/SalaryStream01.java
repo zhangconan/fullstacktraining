@@ -1,11 +1,13 @@
 package com.zkn.fullstacktraining.fourth;
 
 
+import com.zkn.fullstacktraining.first.Salary;
 import com.zkn.fullstacktraining.second.SalaryAssistScope;
 import org.junit.Test;
 import java.io.*;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
@@ -21,21 +23,48 @@ public class SalaryStream01 {
     }
     @Test
     public void thirdExample(){
-        LineNumberReader lnReader = null;
+
         try {
-            lnReader = new LineNumberReader(new InputStreamReader(
+            long startTime = System.currentTimeMillis();
+            LineNumberReader lnReader = new LineNumberReader(new InputStreamReader(
                     new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
             lnReader.lines().parallel()
+                    .map(str -> {String[] strs = str.split(",");//对单个元素进行处理
+                        return new SalaryAssistScope(strs[0].substring(0,2),
+                                Long.parseLong(strs[1])*13+Long.parseLong(strs[2]),1);})
+                    .filter(salary->salary.getSalaryTotal()>100000)//过滤掉不符合条件的数据
+                    .collect(Collectors.groupingBy(salary->salary.getName()))
+                    .entrySet().parallelStream()
+                    .map(str->function.apply(str.getValue()))
+                    .sorted((s1,s2)->Long.compare(s2.getSalaryTotal(),s1.getSalaryTotal()))
+                    .limit(10)
+                    .forEachOrdered(salaryAssistScope -> System.out.println(salaryAssistScope));
+            System.out.println("并行耗时："+(System.currentTimeMillis()-startTime));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void fourthExample(){
+        LineNumberReader lnReader = null;
+        try {
+            long startTime = System.currentTimeMillis();
+            lnReader = new LineNumberReader(new InputStreamReader(
+                    new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
+            lnReader.lines()
                     .map(str -> {String[] strs = str.split(",");//对单个元素进行处理
                         return new SalaryAssistScope(strs[0].substring(0,2),Long.parseLong(strs[1])*13+Long.parseLong(strs[2]),1);})
                     .filter(salary->salary.getSalaryTotal()>100000)//过滤掉不符合条件的数据
                     .collect(Collectors.groupingBy(salary->salary.getName()))
                     .entrySet()
-                    .stream().parallel()
+                    .stream()
                     .map(str->function.apply(str.getValue()))
                     .sorted((s1,s2)->Long.compare(s2.getSalaryTotal(),s1.getSalaryTotal()))
                     .limit(10)
                     .forEachOrdered(salaryAssistScope -> System.out.println(salaryAssistScope));
+            System.out.println("串行耗时："+(System.currentTimeMillis()-startTime));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -45,15 +74,17 @@ public class SalaryStream01 {
     Function<List<SalaryAssistScope>,SalaryAssistScope> function = salaryFunction->{
         return salaryFunction.stream().collect(Collectors.reducing(
                 new SalaryAssistScope("",0L,0),
-                (s1,s2)->{s1.setName(s2.getName());s1.setSalaryTotal(s1.getSalaryTotal()+s2.getSalaryTotal());s1.setCount(s1.getCount()+s2.getCount());return s1;}));
+                (s1,s2)->{s1.setName(s2.getName());s1.setSalaryTotal(s1.getSalaryTotal()+s2.getSalaryTotal());
+                    s1.setCount(s1.getCount()+s2.getCount());return s1;}));
     };
     @Test
     public void secondExample(){
         LineNumberReader lnReader = null;
         try {
+            long startTime = System.currentTimeMillis();
             lnReader = new LineNumberReader(new InputStreamReader(
                     new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
-            lnReader.lines()//得到Stream流
+            lnReader.lines().parallel()//得到Stream流
                     .map(str -> salaryFunction.apply(str))//map对单个元素进行处理，自定义Function，返回SalaryAssistScope对象
                     .filter(salaryAssistScope -> predicate.test(salaryAssistScope))//过滤掉不符合条件的数据
                     .collect(Collectors.groupingBy(str->str.getName(),      //根据姓名分组
@@ -66,12 +97,54 @@ public class SalaryStream01 {
                                         salary.setCount(salary.getCount()+1);
                                         return salary; //BinaryOperator<A> 把多个A合并成一个
                                     })))
-                    .entrySet() //得到Map中的Map.Entry<String,SalaryAssistScope>
-                    .stream()   //得到Entry流
-                    .parallel() //并行
+                    .entrySet().parallelStream() //得到Map中的Map.Entry<String,SalaryAssistScope>
+                    //.stream()   //得到Entry流
+                    //.parallel() //并行
                     .sorted((first,second) -> Long.compare(second.getValue().getSalaryTotal(),first.getValue().getSalaryTotal()))//排序
                     .limit(10)//取前10个
-                    .forEachOrdered(salary -> System.out.println("姓名："+salary.getKey()+" "+salary.getValue().getSalaryTotal()+" 万" + salary.getValue().getCount()+" 人"));//输出
+                    .forEachOrdered(salary -> System.out.println("姓名："+salary.getKey()+" "+salary.getValue().getSalaryTotal()/10000+" 万" + salary.getValue().getCount()+" 人"));//输出
+            System.out.println("并行耗时："+(System.currentTimeMillis()-startTime));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if(lnReader != null)
+                try {
+                    lnReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
+    }
+
+    @Test
+    public void fifthExample(){
+        LineNumberReader lnReader = null;
+        try {
+            long startTime = System.currentTimeMillis();
+            lnReader = new LineNumberReader(new InputStreamReader(
+                    new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
+            lnReader.lines()//得到Stream流
+                    .map(str -> salaryFunction.apply(str))//map对单个元素进行处理，自定义Function，返回SalaryAssistScope对象
+                    .filter(salaryAssistScope -> predicate.test(salaryAssistScope))//过滤掉不符合条件的数据
+                    .collect(Collectors.groupingBy(str->str.getName(),      //根据姓名分组
+                            Collector.of(()->new SalaryAssistScope("",0L,0), //Supplier 创建一个对象
+                                    (salary, salaries) -> {
+                                        salary.setSalaryTotal(salary.getSalaryTotal()+salaries.getSalaryTotal());
+                                        salary.setCount(salary.getCount()+1);},   // BiConsumer<A,T> 往A中添加T元素
+                                    (salary,salaries)->{
+                                        salary.setSalaryTotal(salary.getSalaryTotal()+salaries.getSalaryTotal());
+                                        salary.setCount(salary.getCount()+1);
+                                        return salary; //BinaryOperator<A> 把多个A合并成一个
+                                    })))
+                    .entrySet() //得到Map中的Map.Entry<String,SalaryAssistScope>
+                    .stream()   //得到Entry流
+                    .sorted((first,second) -> Long.compare(second.getValue().getSalaryTotal(),first.getValue().getSalaryTotal()))//排序
+                    .limit(10)//取前10个
+                    .forEachOrdered(salary -> System.out.println("姓名："+salary.getKey()+" "+salary.getValue().getSalaryTotal()/10000+" 万"
+                            + salary.getValue().getCount()+" 人"));//输出
+            System.out.println("串行耗时："+(System.currentTimeMillis()-startTime));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -125,4 +198,6 @@ public class SalaryStream01 {
                 }
         }
     }
+
+
 }
