@@ -1,0 +1,142 @@
+字节输入流（InputStream）：
+SequenceInputStream:
+    SequenceInputStream可以把两个输入流合并成一个输入流。主要用作合并输入流。
+                        内部有一个Enumeration属性，来存放两个输入流。
+                        内部有一个nextStream方法，来指示Enumeration中存放的下一个输入流。
+ByteArrayInputStream:
+    ByteArrayInputStream是字节数组输入流。它的内部有一个字节数组，用来保存读取字节流数据。
+                        pos属性，int类型，用来标记下一个会被读取的字节的索引。
+                        mark属性，int类型，当标记用。注意：mark(int)这个方法需要传入一个int值，但是传入的这个int值没有卵用。
+                        count属性，int类型，字节流的长度。
+FileInputStream：
+    FileInputStream是一个操作文件的字节输入流。可以通过getChannel方法来得到FileChannel对象。
+FilterInputStream：
+    FilterInputStream的作用是用来封装其它的输入流，并为它们提供额外的功能。它本身不对输入流进行处理。装饰模式的运用。
+                     它的常用子类：BufferedInputStream和DataInputStream。还有DeflaterInputStream、InflaterInputStream和PushbackInputStream。
+ObjectInputStream：
+    ObjectInputStream对以前使用ObjectOutputStream写入的基本数据和对象进行反序列化。
+                     内部包含读取序列化的字段和基本类型的方法。
+PipedInputStream：
+    PipedInputStream是管道输入流，它通常和PipedOutputStream一起使用。它们的作用是让多线程可以通过管道进行线程间的通讯。
+                    我们在线程A中向PipedOutputStream中写入数据，这些数据会自动的发送到与PipedOutputStream对应的PipedInputStream中，
+                    进而存储在PipedInputStream的缓冲中；此时，线程B通过读取PipedInputStream中的数据。
+DataInputStream:
+    DataInputStream是数据输入流。它是FilterInputStream的子类，也是用来装饰其它输入流，它“允许应用程序以与机器无关方式从底层输入流中读取基本Java数据类型”
+BufferedInputStream：
+    BufferedInputStream为另一个输入流添加一些功能，即缓冲输入以及支持mark和reset方法的能力。在创建 BufferedInputStream 时，
+                        会创建一个内部缓冲区数组。在读取或跳过流中的字节时，可根据需要从包含的输入流再次填充该内部缓冲区，一次填充多个字节。
+                        mark操作记录输入流中的某个点，reset操作使得在从包含的输入流中获取新字节之前，再次读取自最后一次mark操作后读取的所有字节。
+InflaterInputStream：
+    FilterInputStream此类为解压缩"deflate"压缩格式的数据实现流过滤器。它还用作其他解压缩过滤器（如 GZIPInputStream）的基础。
+DeflaterInputStream：
+    DeflaterInputStream为使用"deflate"压缩格式压缩数据实现输入流过滤器。
+PushbackInputStream：
+    PushbackInputStream为另一个输入流添加“推回 (push back)”或“取消读取 (unread)”的功能。对于一个输入流来讲都是采用从头到尾的顺序读取的，
+                        如果在输入流中某个不需要的内容被读取进来，则通常只能通过程序将这些不需要的内容处理掉。但是我们可以用PushbackInputStream
+                        中的unread方法把读取进来的某些数据重新回退到输入流的缓冲区之中。
+GZIPInputStream：
+    GZIPInputStream为读取GZIP文件格式的压缩数据实现流过滤器。
+ZipInputStream：
+    ZipInputStream为读取ZIP文件格式的文件实现输入流过滤器。包括对已压缩和未压缩条目的支持。
+JarInputStream：
+    JarInputStream类用于从任何输入流读取JAR文件内容。它扩展了java.util.zip.ZipInputStream类，使之支持读取可选的Manifest条目。
+                    Manifest可用于存储有关JAR文件及其条目的元信息。
+
+字节输出流（OutputStream）：
+ByteArrayOutputStream：
+    ByteArrayOutputStream是一个字节数组输出流，其中的数据被写入一个内部的byte数组。缓冲区会随着数据的不断写入而自动增长。可使用toByteArray()和 toString()获取数据。
+                          注意：在操作ByteArrayOutputStream的时候，在操作ByteArrayOutputStream的时候是可以提前关闭的。此类中的方法在关闭此流后仍可被调用，而不会产生任何 IOException。
+ObjectOutputStream：
+    ObjectOutputStream将Java对象的基本数据类型和图形写入OutputStream（序列化对象）。可以使用ObjectInputStream反序列化对象。通过在流中使用文件可以实现对象的持久存储。如果流是网络套接字流，
+                        则可以在另一台主机上或另一个进程中反序列化对象。ObjectOutputStream只能将支持java.io.Serializable接口的对象写入流中。每个serializable对象的类都被编码，
+                        编码内容包括类名和类签名、对象的字段值和数组值，以及从初始对象中引用的其他所有对象的闭包。writeObject方法用于将对象写入流中（序列化）。所有对象（包括 String 和数组）
+                        都可以通过 writeObject写入。可将多个对象或基元写入流中。必须使用与写入对象时相同的类型和顺序从相应ObjectInputstream中读回对象（反序列化）。可以使用 DataOutput
+                        中的适当方法将基本数据类型写入流中。还可以使用 writeUTF 方法写入字符串。对象的默认序列化机制写入的内容是：对象的类，类签名，以及非瞬态和非静态字段的值。
+                        其他对象的引用（瞬态和静态字段除外）也会导致写入那些对象。实现 Externalizable接口允许对象假定可以完全控制对象的序列化形式的内容和格式。
+                        调用 Externalizable 接口的方法（writeExternal 和 readExternal）来保存和恢复对象的状态。通过类实现时，它们可以使用 ObjectOutput和 ObjectInput的所有方法读写它们自己的状态。
+                        Enum 常量的序列化不同于普通的 serializable 或 externalizable 对象。enum 常量的序列化形式只包含其名称；常量的字段值不被传送。为了序列化 enum 常量，ObjectOutputStream
+                        需要写入由常量的名称方法返回的字符串。enum 类型都有一个 0L 的固定的 serialVersionUID。
+FileOutputStream：
+    FileOutputStream文件输出流是用于将数据写入File或FileDescriptor的输出流。文件是否可用或能否可以被创建取决于基础平台。特别是某些平台一次只允许一个 FileOutputStream（或其他文件写入对象）
+                    打开文件进行写入。在这种情况下，如果所涉及的文件已经打开，则此类中的构造方法将失败。FileOutputStream 用于写入诸如图像数据之类的原始字节的流。要写入字符流，请考虑使用 FileWriter。
+PipedOutputStream：
+    PipedOutputStream是管道输出流。它通常和PipedInputStream一起使用。管道输出流是管道的发送端。通常，数据由某个线程写入PipedOutputStream对象，并由其他线程从连接的PipedInputStream 读取。
+                      不建议对这两个对象尝试使用单个线程，因为这样可能会造成该线程死锁。如果某个线程正从连接的管道输入流中读取数据字节，但该线程不再处于活动状态，则该管道被视为处于毁坏状态。
+FilterOutputStream：
+    FilterOutputStream作用是用来封装其它的输出流，并为它们提供额外的功能。它本身不对输入流进行处理。它将已存在的输出流作为其基本数据接收器。常用的子类有BufferedOutputStream和DataOutputStream以及
+                       PrintStream。还有DeflaterOutputStream、InflaterOutputStream和CheckedOutputStream。
+BufferedOutputStream：
+    BufferedOutputStream的作用是为另一个输出流提供“缓冲功能”。通过设置这种输出流，应用程序就可以将各个字节写入底层输出流中，而不必针对每次字节写入调用底层系统。
+DataOutputStream：
+    DataOutputStream是数据输出流。它继承于FilterOutputStream。DataOutputStream是用来装饰其它输出流，它和DataInputStream输入流配合使用。“允许应用程序以与机器无关方式从底层输入流中读写基本Java数据类型”。
+PrintStream：
+    PrintStream是打印输出流，它继承于FilterOutputStream。PrintStream是用来装饰其它输出流。它能为其他输出流添加其他的功能，使它们能够方便地打印各种数据值表示形式。与其他输出流不同，
+                PrintStream永远不会抛出IOException；它产生的IOException会被自身的函数所捕获并设置错误标记，用户可以通过 checkError()返回错误标记，从而查看PrintStream内部是否产生了IOException。
+                另外，PrintStream提供了自动flush和字符集设置功能。所谓自动flush，就是往PrintStream写入的数据会立刻调用flush()函数。
+CheckedOutputStream：
+    CheckedOutputStream用于需要维护写入数据的校验的输出流。可用于验证输出数据的完整性。
+DeflaterOutputStream：
+    DeflaterOutputStream用于使用 "deflate" 压缩格式压缩数据实现输出流过滤器。它还用作其他类型的压缩过滤器（如 GZIPOutputStream）的基础。
+InflaterOutputStream：
+    InflaterOutputStream为解压缩 "deflate" 压缩格式存储的数据实现输出流过滤器。
+ZipOutputStream：
+    ZipOutputStream为以ZIP文件格式写入文件实现输出流过滤器。包括对已压缩和未压缩条目的支持。
+GZipOutputStream：
+    GZipOutputStream为使用GZIP文件格式写入压缩数据实现流过滤器。
+JarOutputStream：
+    JarOutputStream类用于向任何输出流写入JAR文件内容。它扩展了java.util.zip.ZipOutputStream类，使之支持编写可选的Manifest条目。Manifest可用于指定有关JAR文件及其条目的元信息。
+
+字符输入流（Reader）：
+FilterReader：
+    FilterReader用于包装其他的字符输入流。FilterReader的子类应重写这些方法中的一些方法，并且还可以提供一些额外的方法和字段。
+PipedReader：
+    PipedReader是字符管道输入流。可以通过管道进行线程间的通讯。在使用管道通信时，必须将PipedWriter和PipedReader配套使用。
+CharArrayReader：
+    CharArrayReader是字符数组输入流。它和ByteArrayInputStream类似，只不过ByteArrayInputStream是字节数组输入流，而CharArrayReader是字符数组输入流。
+InputStreamReader：
+    InputStreamReader是字节流通向字符流的桥梁。它可以使用指定的charset读取字节并将其解码为字符。它使用的字符集可以由名称指定或显式给定，或者可以接受平台默认的字符集。
+    每次调用InputStreamReader中的一个read()方法都会导致从底层输入流读取一个或多个字节。要启用从字节到字符的有效转换，可以提前从底层流读取更多的字节，使其超过满足当前读取操作所需的字节。
+    为了达到最高效率，可要考虑在BufferedReader内包装InputStreamReader。
+StringReader：
+    StringReader的输入源为一个字符串。
+BufferedReader：
+    BufferedReader从字符输入流中读取文本，缓冲各个字符，从而实现字符、数组和行的高效读取。可以指定缓冲区的大小，或者可使用默认的大小。大多数情况下，默认值就足够大了。
+                    通常，Reader所作的每个读取请求都会导致对底层字符或字节流进行相应的读取请求。因此，建议用BufferedReader包装所有其read()操作可能开销很高的
+                    Reader（如FileReader和InputStreamReader）。
+FileReader:
+    FileReader用来读取字符文件的类。此类的构造方法假定默认字符编码和默认字节缓冲区大小都是适当的。要自己指定这些值，可以先在FileInputStream上构造一个InputStreamReader。
+LineNumberReader：
+    LineNumberReader是跟踪行号的缓冲字符输入流。此类定义了方法setLineNumber(int)和getLineNumber()，它们可分别用于设置和获取当前行号。
+                    默认情况下，行编号从 0 开始。该行号随数据读取在每个行结束符处递增，并且可以通过调用 setLineNumber(int) 更改行号。但要注意的是，setLineNumber(int) 不会实际更改流中的当前位置；
+                    它只更改将由 getLineNumber() 返回的值。可认为行在遇到以下符号之一时结束：换行符（'\n'）、回车符（'\r'）、回车后紧跟换行符。
+PushbackReader：
+    PushbackReader是允许将字符推回到流的字符流。
+
+字符输出流（Writer）：
+StringWriter：
+    StringWriter是一个字符流，它以一个可以被用来组装String字符串的StringBuffer来聚集输出。当StringWriter被关闭的时候，没有任何影响。在StringWriter被关闭的时候，
+    			  你也可以调用它的方法，不会有任何异常抛出。
+FileWriter：
+    FileWriter是一个方便写字符文件的类。FileWriter使用的是系统默认的字符集和默认的缓冲字节大小。如果你想自己定义字符集和缓冲字节大小的话，你可以使用FileOutputStream
+    			来构造一个OutputStreamWriter.一个文件是否可用或者是否能被创建取决于你所使用的平台。实际上，在一些平台中，一个文件同时只能被一个FileWriter类或者其他的文件写入对象
+    			打开。那么在这种情况下，如果使用FileWriter去读那些已经被其他FileWriter或者类似的文件写入对象所打开的文件的时候，会失败。
+PrintWriter：
+    PrintWriter向文本输出流打印对象的格式化表示形式。此类实现在PrintStream中的所有print方法。它不包含用于写入原始字节的方法（没有write(byte)或者print(byte)）。
+                与PrintStream类不同，如果启用了自动刷新，则只有在调用println、printf或format的其中一个方法时才可能完成此操作，而不是每当正好输出换行符时才完成。
+                这些方法使用平台自有的行分隔符概念，而不是换行符。
+CharArrayWriter:
+    CharArrayWrite实现一个可用作字符输入流的字符缓冲区。
+BufferedWriter:
+    BufferedWriter是缓冲字符输出流,为其他字符输出流添加一些缓冲功能。
+FilterWriter:
+    FilterWriter是用来包装其他的字符输入流的，FilterWriter的子类应重写这些方法中的一些方法，并且还可以提供一些额外的方法和字段。
+OutputStreamWriter：
+    OutputStreamWriter是字符流通向字节流的桥梁。它可以使用指定的charset将要写入流中的字符编码成字节。它使用的字符集可以由名称指定或显式给定，否则将接受平台默认的字符集。
+                      每次调用write()方法都会导致在给定字符（或字符集）上调用编码转换器（StreamEncoder）。在写入底层输出流之前，得到的这些字节将在缓冲区中累积。可以指定此缓冲区的大小，
+                      不过，默认的缓冲区对多数用途来说已足够大。注意，传递给write()方法的字符没有缓冲。
+                      为了获得最高效率，可考虑将OutputStreamWriter包装到BufferedWriter中，以避免频繁调用转换器。
+PipedWriter:
+    PipedWriter是字符管道输出流。PipedWriter和PipedReader的作用是可以通过管道进行线程间的通讯。在使用管道通信时，必须将PipedWriter和PipedReader配套使用。
+
+参考：http://www.cnblogs.com/skywang12345/p/io_01.html
+
