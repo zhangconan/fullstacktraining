@@ -33,7 +33,7 @@ public class MainFunction {
     }
     @Test
     public void testVolaitleVariable(){
-        VolaitleVariable volaitleVariable = new VolaitleVariable();
+        VolatileVariable volaitleVariable = new VolatileVariable();
         for(int i=0;i<10;i++){
             new Thread(new Runnable() {
                 @Override

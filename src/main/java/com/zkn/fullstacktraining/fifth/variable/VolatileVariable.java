@@ -3,7 +3,7 @@ package com.zkn.fullstacktraining.fifth.variable;
 /**
  * Created by zkn on 2017/1/9.
  */
-public class VolaitleVariable {
+public class VolatileVariable implements MyCounter{
 
     private volatile long value;
 

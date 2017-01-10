@@ -3,7 +3,7 @@ package com.zkn.fullstacktraining.fifth.variable;
 /**
  * Created by zkn on 2017/1/9.
  */
-public class NormalVariable {
+public class NormalVariable implements MyCounter{
 
     private long value;
 
