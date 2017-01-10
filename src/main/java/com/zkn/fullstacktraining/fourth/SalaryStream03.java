@@ -21,7 +21,7 @@ public class SalaryStream03 {
             long startTime = System.currentTimeMillis();
             lnReader = new LineNumberReader(new InputStreamReader(
                     new FileInputStream("D:\\LearnVideo\\text.txt"),"utf-8"));
-            lnReader.lines()//得到Stream流
+            lnReader.lines().parallel()//得到Stream流
                     .map(str -> salaryFunction.apply(str))//map对单个元素进行处理，自定义Function，返回SalaryAssistScope对象
                     .filter(salaryAssistScope -> predicate.test(salaryAssistScope))//过滤掉不符合条件的数据
                     .collect(new CollectorsImpl())
@@ -86,7 +86,16 @@ public class SalaryStream03 {
         public BinaryOperator<Map<String, SalaryAssistScope>> combiner() {
 
             return (e1,e2)->{
-                e1.putAll(e2);
+                //System.out.println(e1+" 分开 "+e2);
+                e1.entrySet().forEach(e->{
+//                    System.out.println("我是e："+e+" 我是key "+e.getKey()+" 我是value" +e.getValue());
+                    SalaryAssistScope salaryAssistScope = e2.get(e.getKey());
+                    if(salaryAssistScope != null){
+                        e.getValue().setSalaryTotal(e.getValue().getSalaryTotal()+salaryAssistScope.getSalaryTotal());
+                        e.getValue().setCount(e.getValue().getCount()+salaryAssistScope.getCount());
+                    }
+                });
+                e1.entrySet().stream().forEach(e->System.out.println("我是e："+e+" 我是key "+e.getKey()+" 我是value" +e.getValue()));
                 return e1;
             };
         }
