@@ -11,5 +11,6 @@ public class ImplementsHappensBefore {
      * 3、用volatile关键字。
      * 4、用原子类型。在java.util.concurrent.atomic包下。如：AtomicInteger、AtomicDouble。
      * 5、对于64位的类型，可以用LongAdder、DoubleAdder.
+     * 6、用Unsafe类。
      */
 }
