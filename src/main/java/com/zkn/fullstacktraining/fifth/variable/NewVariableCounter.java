@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
  */
 public class NewVariableCounter {
 
-    private static int counter = 1_000_000;
+    private static int counter = 10_000_000;
 
     public static void main(String[] args){
         getVariable(new AtomicLongVariable());
