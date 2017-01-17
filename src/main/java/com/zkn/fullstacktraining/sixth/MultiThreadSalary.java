@@ -29,9 +29,11 @@ public class MultiThreadSalary {
                 .mapToObj((i) -> {
                             System.out.println(i);
                             if (i == 7) {
-                                return new Thread(() -> multiThreadSalary.reserveSalary(stringList, average * i, size));
+                                return new Thread(() ->
+                                        multiThreadSalary.reserveSalary(stringList, average * i, size));
                             } else {
-                                return new Thread(() -> multiThreadSalary.reserveSalary(stringList, average * i, average * i + average));
+                                return new Thread(() ->
+                                        multiThreadSalary.reserveSalary(stringList, average * i, average * i + average));
                             }
                         }
                 )
@@ -49,15 +51,22 @@ public class MultiThreadSalary {
         multiThreadSalary.salaryCollection
                 .stream()
                 .reduce((map1, map2) -> {
-                    map2.entrySet().stream().forEach(map -> map1.merge(map.getKey(), map.getValue(), (k, v) -> {
+                    map2.entrySet().stream().forEach(map ->
+                            map1.merge(map.getKey(), map.getValue(), (k, v) -> {
                         k.setSalaryTotal(k.getSalaryTotal() + v.getSalaryTotal());
                         k.setCount(k.getCount() + v.getCount());
                         return k;
                     }));
                     return map1;
-                }).ifPresent(s -> s.entrySet().stream().sorted((first, second) -> Long.compare(second.getValue().getSalaryTotal(), first.getValue().getSalaryTotal()))//排序
+                }).ifPresent(s -> s.entrySet().stream()
+                .sorted((first, second) ->
+                        Long.compare(second.getValue().getSalaryTotal(),
+                                first.getValue().getSalaryTotal()))//排序
                 .limit(10)//取前10个
-                .forEachOrdered(salary -> System.out.println("姓名：" + salary.getKey() + " " + salary.getValue().getSalaryTotal() / 10000 + " 万"
+                .forEachOrdered(salary ->
+                        System.out.println("姓名：" +
+                                salary.getKey() + " " +
+                                salary.getValue().getSalaryTotal() / 10000 + " 万"
                         + salary.getValue().getCount() + " 人")));
 
     }
@@ -73,12 +82,14 @@ public class MultiThreadSalary {
                 }).collect(Collectors.groupingBy(str -> str.getName(),
                         Collector.of(() -> new SalaryAssistScope(),
                                 (s1, s2) -> {
-                                    s1.setSalaryTotal(s1.getSalaryTotal() + s2.getSalaryTotal());
+                                    s1.setSalaryTotal(s1.getSalaryTotal()
+                                            + s2.getSalaryTotal());
                                     s1.setName(s2.getName());
                                     s1.setCount(s1.getCount() + 1);
                                 },
                                 (s1, s2) -> {
-                                    s1.setSalaryTotal(s1.getSalaryTotal() + s2.getSalaryTotal());
+                                    s1.setSalaryTotal(s1.getSalaryTotal()
+                                            + s2.getSalaryTotal());
                                     s1.setName(s2.getName());
                                     s1.setCount(s1.getCount() + 1);
                                     return s1;
