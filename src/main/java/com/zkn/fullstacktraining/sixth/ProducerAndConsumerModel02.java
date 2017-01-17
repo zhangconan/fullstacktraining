@@ -27,7 +27,7 @@ class ProducerAndConsumer{
     public void producer(){
 
         synchronized (obj){
-            if (flag){
+            while (flag){
                 try {
                     System.out.println("1111生成者"+Thread.currentThread().getName());
                     obj.wait();
@@ -44,7 +44,7 @@ class ProducerAndConsumer{
     public void consumer(){
 
         synchronized (obj){
-            if (!flag) {
+            while (!flag) {
                 try {
                     System.out.println("2222消费者"+Thread.currentThread().getName());
                     obj.wait();
