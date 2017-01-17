@@ -27,7 +27,7 @@ public class MultiThreadSalary {
         MultiThreadSalary multiThreadSalary = new MultiThreadSalary();
         List<Thread> threadList = IntStream.range(0, 8)
                 .mapToObj((i) -> {
-                    System.out.println(i);
+                            System.out.println(i);
                             if (i == 7) {
                                 return new Thread(() -> multiThreadSalary.reserveSalary(stringList, average * i, size));
                             } else {
@@ -35,7 +35,10 @@ public class MultiThreadSalary {
                             }
                         }
                 )
-                .filter(e->{e.start();return true;}).collect(Collectors.toList());
+                .filter(e -> {
+                    e.start();
+                    return true;
+                }).collect(Collectors.toList());
         threadList.stream().forEach(e -> {
             try {
                 e.join();
@@ -62,7 +65,7 @@ public class MultiThreadSalary {
     public void reserveSalary(List<String> salaries, long start, long end) {
         salaryCollection.add(salaries.stream()
                 .skip(start)//跳过前面的
-                .limit(end-start)
+                .limit(end - start)
                 .map(str -> {
                     String[] strs = str.split(",");//对单个元素进行处理
                     return new SalaryAssistScope(strs[0].substring(0, 2),
