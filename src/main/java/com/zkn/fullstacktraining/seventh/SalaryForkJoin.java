@@ -95,8 +95,7 @@ public class SalaryForkJoin extends RecursiveTask<Map<String, SalaryAssistScope>
         return mapList;
     }
 
-    private Map<String, SalaryAssistScope> reduceResult(Map<String, SalaryAssistScope> m1,
-                                                        Map<String, SalaryAssistScope> m2) {
+    private Map<String, SalaryAssistScope> reduceResult(Map<String, SalaryAssistScope> m1, Map<String, SalaryAssistScope> m2) {
         if (m1 != null && m2 != null) {
             m2.entrySet().stream().forEach(map -> m1.merge(map.getKey(), map.getValue(), (k, v) -> {
                 k.setSalaryTotal(k.getSalaryTotal() + v.getSalaryTotal());
