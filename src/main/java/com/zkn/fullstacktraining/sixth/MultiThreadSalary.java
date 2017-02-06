@@ -25,7 +25,6 @@ public class MultiThreadSalary {
         MultiThreadSalary multiThreadSalary = new MultiThreadSalary();
         List<Thread> threadList = IntStream.range(0, 8)
                 .mapToObj((i) -> {
-                            System.out.println(i);
                             if (i == 7) {
                                 return new Thread(() ->
                                         multiThreadSalary.reserveSalary(stringList, average * i, size));
