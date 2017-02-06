@@ -20,7 +20,7 @@ public class SearchStringByThreadPool {
             ExecutorService executorService = Executors.newFixedThreadPool(5);
             List<Future<Pair<String, Integer>>> listFile =
                     //这里是取所传入目录的最多四层，如果不知道这个API的话需要递归去做。
-                    Files.walk(Paths.get("D:\\CUST\\workspace\\JavaCore\\FullStackTraining\\src\\main\\java\\com\\zkn"), 4)
+                    Files.walk(Paths.get("D:\\CUST\\WORK\\Exercises\\FullStackTraining\\src\\main\\java\\com\\zkn"), 4)
                             .filter(file -> !Files.isDirectory(file) && file.toString().endsWith("java"))//文件文件夹和不是java的文件
                             .map(file -> (Callable<Pair<String, Integer>>) () -> {//创建N多个Callable实现类
                                 Pair<String, Integer> pair = null;//这里的键值对用pair比用Map更好一些
