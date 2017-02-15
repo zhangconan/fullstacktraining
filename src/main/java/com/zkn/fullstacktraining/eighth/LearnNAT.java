@@ -2,7 +2,7 @@ package com.zkn.fullstacktraining.eighth;
 
 /**
  * Created by wb-zhangkenan on 2017/2/14.
- * 电脑跟外网的网站通讯的时候，是把数据报文直接发给谁的？
+ * 电脑跟外网的网站通讯的时候，是把数据报文直接发给谁的？把报文发给了支持NAT的设备。
  */
 public class LearnNAT {
 
