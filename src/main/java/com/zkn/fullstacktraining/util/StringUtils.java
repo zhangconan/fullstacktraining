@@ -16,5 +16,20 @@ public class StringUtils {
             return true;
         return false;
     }
-
+    /**
+     * 获取uri
+     * @param str
+     * @return
+     */
+    public static String parserUri(String str,String spliter) {
+        if(isEmpty(str))
+            return "";
+        int indexFirst = str.indexOf(spliter);
+        if(indexFirst != -1){//说明查找到了
+            int indexSecond = str.indexOf(spliter,indexFirst+1);
+            if(indexSecond > indexFirst)
+                return str.substring(indexFirst+1,indexSecond);
+        }
+        return "";
+    }
 }
