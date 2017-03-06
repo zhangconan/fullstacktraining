@@ -23,7 +23,8 @@ public class Response {
 
         FileInputStream fis = null;
         try {
-            File file = new File("D:\\CUST\\WORK\\Exercises\\FullStackTraining\\src\\main\\java\\com\\zkn\\fullstacktraining\\ninth\\fileupload", path);
+            //File file = new File("D:\\CUST\\WORK\\Exercises\\FullStackTraining\\src\\main\\java\\com\\zkn\\fullstacktraining\\ninth\\fileupload", path);
+            File file = new File("D:\\CUST\\workspace\\JavaCore\\FullStackTraining\\src\\main\\java\\com\\zkn\\fullstacktraining\\ninth\\fileupload", path);
             if (file.exists() && !file.isDirectory()) {
                 if (file.canRead()) {
                     fis = new FileInputStream(file);

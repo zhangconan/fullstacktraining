@@ -56,14 +56,14 @@ public class Request {
             }
             //请求头
             while((str = br.readLine()) != null){
-                if("".equals(str)) {
-                    break;
-                }
                 if(!StringUtils.isEmpty(str)){
                     if(str.indexOf(":") > 0){
                         String[] strs = str.split(":");
                         headers.put(strs[0].toLowerCase(),strs[1].trim());
                     }
+                }
+                if("".equals(str)){
+                    break;
                 }
                 sb.append(str).append("\n");
             }
