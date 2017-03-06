@@ -11,7 +11,7 @@ public class StaticResourceProcessor {
     public void process(Request request, Response response) {
 
         try {
-            response.sendStaticResource(request.getUri() + ".html");
+            response.sendStaticResource(request.getUri());
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -44,6 +44,7 @@ public class Request {
             //读取请求行
             String requestLine = br.readLine();
             if(!StringUtils.isEmpty(requestLine)){
+                sb.append(requestLine);
                 String[] reqs = requestLine.split(" ");
                 if(reqs!= null && reqs.length>0){
                     if("GET".equals(reqs[0])){
@@ -55,8 +56,9 @@ public class Request {
             }
             //请求头
             while((str = br.readLine()) != null){
-                if("".equals(str))
+                if("".equals(str)) {
                     break;
+                }
                 if(!StringUtils.isEmpty(str)){
                     if(str.indexOf(":") > 0){
                         String[] strs = str.split(":");
@@ -67,10 +69,10 @@ public class Request {
             }
             System.out.println(sb.toString());
             uri = StringUtils.parserUri(sb.toString()," ");
-            //POST的内容
-            byte[] bytes = new byte[getContentLength()];
-            inputStream.read(bytes);
-            System.out.println(new String(bytes));
+//            //POST的内容
+//            byte[] bytes = new byte[getContentLength()];
+//            inputStream.read(bytes);
+//            System.out.println(new String(bytes));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,17 +1,20 @@
 package com.zkn.fullstacktraining.ninth.fileupload;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.zkn.fullstacktraining.util.StringUtils;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.*;
+
 /**
  * Created by wb-zhangkenan on 2016/12/29.
  */
 public class HttpServer {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         await();
     }
@@ -22,28 +25,15 @@ public class HttpServer {
         try {
             boolean shutDown = false;
             //创建一个服务端
-            serverSocket = new ServerSocket(8004,1, InetAddress.getByName("127.0.0.1"));
-            while (!shutDown){
+            serverSocket = new ServerSocket(8004, 1, InetAddress.getByName("127.0.0.1"));
+            ExecutorService executorService = new ThreadPoolExecutor(10,
+                    10, 0L, TimeUnit.SECONDS,
+                    new LinkedBlockingDeque<>(),
+                    new ThreadFactoryBuilder().setNameFormat("XX-task-%d").build());
+            while (!shutDown) {
                 //接收客户端请求
-                Socket socket = serverSocket.accept();
-                Request request = new Request(socket.getInputStream());
-                request.parseRequest();//解析请求信息
-                Response response = new Response(socket.getOutputStream());
-                String uri = request.getUri();
-                if(uri !=null && uri.startsWith("/favicon.ico")){
-
-                }
-                if(!StringUtils.isEmpty(uri) && uri.startsWith("/static/")){
-                    StaticResourceProcessor resouce = new StaticResourceProcessor();
-                    resouce.process(request,response);//处理静态资源
-                }
-                if(!StringUtils.isEmpty(uri) && uri.startsWith("/file/uploadFileAction")){
-                    //处理上传文件信息
-                    //request
-                    System.out.println("dsdsdsd");
-                }
-                socket.close();
-                shutDown = "SHUT_DOWN".equals(request.getUri());
+                ProcessSocket processSocket = new ProcessSocket(serverSocket.accept());
+                executorService.execute(processSocket);
             }
         } catch (IOException e) {
             e.printStackTrace();
