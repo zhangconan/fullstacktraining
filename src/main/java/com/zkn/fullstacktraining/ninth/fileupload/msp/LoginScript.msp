@@ -1,0 +1,6 @@
+if ("name123" == "$name" && "password01" == "$password"){
+    return "wo shi yi ge da niu "
+}else{
+    return "no access"
+}
+return "the end"

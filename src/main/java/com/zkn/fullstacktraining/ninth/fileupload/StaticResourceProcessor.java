@@ -14,6 +14,5 @@ public class StaticResourceProcessor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }

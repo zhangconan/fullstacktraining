@@ -22,13 +22,17 @@ public class StringUtils {
      * @return
      */
     public static String parserUri(String str,String spliter) {
-        if(isEmpty(str))
+
+        if(isEmpty(str)) {
             return "";
+        }
         int indexFirst = str.indexOf(spliter);
-        if(indexFirst != -1){//说明查找到了
+        //说明查找到了
+        if(indexFirst != -1){
             int indexSecond = str.indexOf(spliter,indexFirst+1);
-            if(indexSecond > indexFirst)
-                return str.substring(indexFirst+1,indexSecond);
+            if(indexSecond > indexFirst) {
+                return str.substring(indexFirst + 1, indexSecond);
+            }
         }
         return "";
     }

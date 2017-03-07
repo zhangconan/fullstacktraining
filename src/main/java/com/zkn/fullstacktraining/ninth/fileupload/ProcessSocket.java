@@ -24,7 +24,7 @@ public class ProcessSocket implements Runnable {
         try {
             request = new Request(socket.getInputStream());
             request.parseRequest();//解析请求信息
-            Response response = new Response(socket.getOutputStream());
+            Response response = new Response(socket.getOutputStream(),request);
             String uri = request.getUri();
             if(uri !=null && uri.startsWith("/favicon.ico")){
 
@@ -38,6 +38,10 @@ public class ProcessSocket implements Runnable {
                 //处理上传文件信息
                 //request
                 System.out.println("dsdsdsd");
+            }
+            if(!StringUtils.isEmpty(uri) && uri.startsWith("/msp/")){
+                MspProcessor mspProcessor = new MspProcessor();
+                mspProcessor.processMsp(response);
             }
             socket.close();
             if("SHUT_DOWN".equals(request.getUri())){

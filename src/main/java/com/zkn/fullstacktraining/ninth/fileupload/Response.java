@@ -1,6 +1,14 @@
 package com.zkn.fullstacktraining.ninth.fileupload;
 
+
 import java.io.*;
+
+import com.zkn.fullstacktraining.ninth.Constant;
+import com.zkn.fullstacktraining.ninth.fileupload2.Request;
+import groovy.lang.Binding;
+import groovy.util.GroovyScriptEngine;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 /**
  * Created by wb-zhangkenan on 2016/12/29.
@@ -14,18 +22,22 @@ public class Response {
      * 字符输出流
      */
     private PrintWriter printWriter;
+    /**
+     * 请求类
+     */
+    private Request request;
 
-    public Response(OutputStream outputStream) {
+    public Response(OutputStream outputStream,Request request) {
         this.outputStream = outputStream;
+        this.request = request;
     }
 
-    public void sendStaticResource(String path) throws IOException {
+        public void sendStaticResource(String path) throws IOException {
 
-        FileInputStream fis = null;
-        try {
-            //File file = new File("D:\\CUST\\WORK\\Exercises\\FullStackTraining\\src\\main\\java\\com\\zkn\\fullstacktraining\\ninth\\fileupload", path);
-            File file = new File("D:\\CUST\\workspace\\JavaCore\\FullStackTraining\\src\\main\\java\\com\\zkn\\fullstacktraining\\ninth\\fileupload", path);
-            if (file.exists() && !file.isDirectory()) {
+                    FileInputStream fis = null;
+            try {
+                File file = new File(Constant.rootPath, path);
+                if (file.exists() && !file.isDirectory()) {
                 if (file.canRead()) {
                     fis = new FileInputStream(file);
                     int flag = 0;
@@ -49,12 +61,13 @@ public class Response {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (fis != null)
+            if (fis != null) {
                 try {
                     fis.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
         }
     }
 
@@ -63,4 +76,31 @@ public class Response {
         return printWriter;
     }
 
+    public void processMsp() {
+
+        String[] roots = new String[]{Constant.rootPath};
+        try {
+            //Groovy脚本引擎
+            GroovyScriptEngine engine = new GroovyScriptEngine(roots);
+            Binding binding = new Binding();
+            binding.setVariable("name",request.getParameters().get("name"));
+            binding.setVariable("password",request.getParameters().get("password"));
+            Object obj = engine.run(request.getUri().substring(1),binding);
+            PrintWriter pw = getWriter();
+            //这里用PrintWriter字符输出流，设置自动刷新
+            pw.write("HTTP/1.1 200 OK \r\n");
+            pw.write("Content-Type: text/html\r\n");
+            pw.write("Content-Length: "+((String)obj).length()+"\r\n");
+            pw.write("\r\n");
+            pw.write((String) obj);
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ResourceException e) {
+            e.printStackTrace();
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

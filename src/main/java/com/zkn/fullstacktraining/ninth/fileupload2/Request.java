@@ -109,8 +109,9 @@ public class Request {
                             } catch (Exception e) {
 
                             } finally {
-                                if (bw != null)
+                                if (bw != null) {
                                     bw.close();
+                                }
                             }
                         }
                         if (str.indexOf("Content-Disposition:") >= 0) {
@@ -129,7 +130,7 @@ public class Request {
                             parameters.put(name, stringBuilder.toString());
                         }
                     } while (("--" + boundary).equals(str));
-
+                    //解析结束
                     if (str.equals("--" + boundary + "--")) {
                         break;
                     }
@@ -137,6 +138,27 @@ public class Request {
             }
             //System.out.println(sb.toString());
             uri = StringUtils.parserUri(sb.toString(), " ");
+            //说明可能会有参数
+            //说明有参数
+            int flag = -1;
+            if ((flag = uri.indexOf('?')) >= 0) {
+                String oldUri = uri;
+                uri = uri.substring(0,flag);
+                String parameterPath = oldUri.substring(flag+1);
+                String[] parameter = parameterPath.split("&");
+                if (parameter != null && parameter.length > 0) {
+                    for (int i = 0; i < parameter.length; i++) {
+                        String str1 = parameter[i];
+                        if((flag = str1.indexOf('=')) >= 0){
+                            String key = str1.substring(0,flag);
+                            String value = str1.substring(flag+1);
+                            parameters.put(key,value);
+                        }else{
+                            parameters.put(str,null);
+                        }
+                    }
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -171,4 +193,11 @@ public class Request {
         return headers;
     }
 
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
 }
