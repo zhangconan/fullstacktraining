@@ -27,17 +27,17 @@ public class Response {
      */
     private Request request;
 
-    public Response(OutputStream outputStream,Request request) {
+    public Response(OutputStream outputStream, Request request) {
         this.outputStream = outputStream;
         this.request = request;
     }
 
-        public void sendStaticResource(String path) throws IOException {
+    public void sendStaticResource(String path) throws IOException {
 
-                    FileInputStream fis = null;
-            try {
-                File file = new File(Constant.rootPath, path);
-                if (file.exists() && !file.isDirectory()) {
+        FileInputStream fis = null;
+        try {
+            File file = new File(Constant.rootPathHome, path);
+            if (file.exists() && !file.isDirectory()) {
                 if (file.canRead()) {
                     fis = new FileInputStream(file);
                     int flag = 0;
@@ -78,19 +78,19 @@ public class Response {
 
     public void processMsp() {
 
-        String[] roots = new String[]{Constant.rootPath};
+        String[] roots = new String[]{Constant.rootPathHome};
         try {
             //Groovy脚本引擎
             GroovyScriptEngine engine = new GroovyScriptEngine(roots);
             Binding binding = new Binding();
-            binding.setVariable("name",request.getParameters().get("name"));
-            binding.setVariable("password",request.getParameters().get("password"));
-            Object obj = engine.run(request.getUri().substring(1),binding);
+            binding.setVariable("name", request.getParameters().get("name"));
+            binding.setVariable("password", request.getParameters().get("password"));
+            Object obj = engine.run(request.getUri().substring(1), binding);
             PrintWriter pw = getWriter();
             //这里用PrintWriter字符输出流，设置自动刷新
             pw.write("HTTP/1.1 200 OK \r\n");
             pw.write("Content-Type: text/html\r\n");
-            pw.write("Content-Length: "+((String)obj).length()+"\r\n");
+            pw.write("Content-Length: " + ((String) obj).length() + "\r\n");
             pw.write("\r\n");
             pw.write((String) obj);
             pw.close();
@@ -101,6 +101,21 @@ public class Response {
         } catch (ScriptException e) {
             e.printStackTrace();
         }
+    }
 
+    public void processFileUpload() {
+        String[] roots = new String[]{Constant.rootPathHome};
+        try {
+            PrintWriter pw = getWriter();
+            //这里用PrintWriter字符输出流，设置自动刷新
+            pw.write("HTTP/1.1 200 OK \r\n");
+            pw.write("Content-Type: text/html;charset=utf-8\r\n");
+            pw.write("Content-Length: " + "upload success".length() + "\r\n");
+            pw.write("\r\n");
+            pw.write("upload success");
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

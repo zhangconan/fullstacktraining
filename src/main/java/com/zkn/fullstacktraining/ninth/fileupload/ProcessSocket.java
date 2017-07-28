@@ -35,9 +35,8 @@ public class ProcessSocket implements Runnable {
                 resouce.process(request,response);
             }
             if(!StringUtils.isEmpty(uri) && uri.startsWith("/file/uploadFileAction")){
-                //处理上传文件信息
-                //request
-                System.out.println("dsdsdsd");
+
+                response.processFileUpload();
             }
             if(!StringUtils.isEmpty(uri) && uri.startsWith("/msp/")){
                 MspProcessor mspProcessor = new MspProcessor();
