@@ -8,6 +8,9 @@ import com.zkn.fullstacktraining.spring.one.resource.CustomInputStreamSource;
 import com.zkn.fullstacktraining.spring.one.servlet.Servlet;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +24,7 @@ public class ApplicationContext {
     public static final Map<String, RequestMappingInfo> mappingMap = new HashMap<>();
     private static Servlet servlet;
     private CustomInputStreamSource streamSource = null;
-
+    private FileSystemClassLoader classLoader = new FileSystemClassLoader();
     public ApplicationContext(Servlet servlet, String location) {
         this.servlet = servlet;
         streamSource = new CustomClasspathResource(location);
@@ -37,16 +40,18 @@ public class ApplicationContext {
         servlet.init();
     }
 
-    public void recursionFile(File file, String componentScan) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public void recursionFile(File file, String componentScan) throws Exception {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (File fi : files) {
                 recursionFile(fi, componentScan);
             }
         }
-        if (file.getPath().endsWith(".class")) {
-            if (file.getPath().contains("." + componentScan + ".")) {
-                Class clazz = Class.forName(file.getPath());
+        String filePath = file.getPath();
+        if (filePath.endsWith(".class")) {
+            filePath = filePath.replace("\\",".");
+            if (filePath.contains("." + componentScan + ".")) {
+                Class clazz = classLoader.loadClass(file.getPath());
                 if (isHandler(clazz)) {
                     Object obj = clazz.newInstance();
                     String str = "";

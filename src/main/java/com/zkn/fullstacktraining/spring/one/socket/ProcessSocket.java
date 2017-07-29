@@ -27,8 +27,8 @@ public class ProcessSocket implements Runnable {
     public void run() {
         Request request = null;
         try {
-            request = new Request();
-            request.parseRequest(socket.getInputStream());//解析请求信息
+            request = new Request(socket.getInputStream());
+            request.parseRequest();//解析请求信息
             Response response = new Response(socket.getOutputStream(),request);
             String uri = request.getUri();
             if(uri !=null && uri.startsWith("/favicon.ico")){

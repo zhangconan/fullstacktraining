@@ -30,14 +30,16 @@ public class HttpServletImpl implements Servlet {
             resouce.process(request,response);
         }else{
             RequestMappingInfo mappingInfo = ApplicationContext.mappingMap.get(uri);
-            Method method = mappingInfo.getMethod();
-            try {
-                mappingInfo.getMethod().invoke(mappingInfo.getObj());
-                response.sendSuccess();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
+            if(mappingInfo != null){
+                Method method = mappingInfo.getMethod();
+                try {
+                    mappingInfo.getMethod().invoke(mappingInfo.getObj());
+                    response.sendSuccess();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

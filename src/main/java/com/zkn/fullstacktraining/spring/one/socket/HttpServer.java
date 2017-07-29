@@ -26,11 +26,11 @@ public class HttpServer {
 
         ServerSocket serverSocket = null;
         try {
-            ApplicationContext ac = new ApplicationContext(new HttpServletImpl(), "com/zkn/fullstacktraining/spring/one/spring-config.properties");
+            ApplicationContext ac = new ApplicationContext(new HttpServletImpl(), "/com/zkn/fullstacktraining/spring/one/spring-config.properties");
             ac.init();
             boolean shutDown = false;
             //创建一个服务端
-            serverSocket = new ServerSocket(8004, 1, InetAddress.getByName("127.0.0.1"));
+            serverSocket = new ServerSocket(8005, 1, InetAddress.getByName("127.0.0.1"));
             ExecutorService executorService = new ThreadPoolExecutor(10,
                     10, 0L, TimeUnit.SECONDS,
                     new LinkedBlockingDeque<>(),

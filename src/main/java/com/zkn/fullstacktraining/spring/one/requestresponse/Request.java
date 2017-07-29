@@ -1,10 +1,7 @@
 package com.zkn.fullstacktraining.spring.one.requestresponse;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -35,6 +32,10 @@ public class Request {
      * 请求URL
      */
     private String uri;
+
+    public Request(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
     /**
      * 获取头文件信息
@@ -103,24 +104,39 @@ public class Request {
     /**
      * 解析请求
      */
-    public void parseRequest(InputStream inputStream) {
+    public void parseRequest() {
 
         if (isParser) {
             return;
         }
-        this.inputStream = inputStream;
+        isParser = true;
         //这里用了LineNumberReader 没有考虑性能问题
-        LineNumberReader lineNumberReader = new LineNumberReader(new InputStreamReader(inputStream));
+        BufferedReader lineNumberReader = new BufferedReader(new InputStreamReader(inputStream));
         try {
             //获取请求行 请求行格式 Method URI 协议
             String str = lineNumberReader.readLine();
-            String[] strArray = str.split(" ");
-            requestMethod = strArray[0];
-            parseUrl(strArray[1]);
-            parseHeader(lineNumberReader);
+            System.out.println("第一行"+str);
+            if(str != null){
+                String[] strArray = str.split(" ");
+                requestMethod = strArray[0];
+                parseUrl(strArray[1]);
+            }
+            String headerStr = null;
+            String[] strArr = null;
+            while ((headerStr = lineNumberReader.readLine()) != null) {
+                if("".equals(headerStr)){
+                    break;
+                }
+                strArr = headerStr.split(":");
+                if (strArr.length == 2) {
+                    headerMap.put(strArr[0].toLowerCase(), strArr[1].trim());
+                }
+            }
+            //parseHeader(lineNumberReader);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("执行完了。。。");
     }
 
     /**
@@ -128,10 +144,13 @@ public class Request {
      *
      * @param lineNumberReader
      */
-    private void parseHeader(LineNumberReader lineNumberReader) throws IOException {
+    private void parseHeader(BufferedReader lineNumberReader) throws IOException {
         String headerStr = null;
         String[] str = null;
         while ((headerStr = lineNumberReader.readLine()) != null) {
+            if("".equals(str)){
+                break;
+            }
             str = headerStr.split(":");
             if (str.length == 2) {
                 headerMap.put(str[0].toLowerCase(), str[1]);
