@@ -23,6 +23,10 @@ public class RequestMappingInfo {
      * 参数
      */
     private List<String> parameter;
+    /**
+     * 方法的参数
+     */
+    private Class<?>[] formalParameter;
 
     public Class<?> getClazz() {
         return clazz;
@@ -54,5 +58,13 @@ public class RequestMappingInfo {
 
     public void setParameter(List<String> parameter) {
         this.parameter = parameter;
+    }
+
+    public Class<?>[] getFormalParameter() {
+        return formalParameter;
+    }
+
+    public void setFormalParameter(Class<?>[] formalParameter) {
+        this.formalParameter = formalParameter;
     }
 }

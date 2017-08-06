@@ -74,8 +74,8 @@ public class Response {
             printWriter = getWriter();
             //这里用PrintWriter字符输出流，设置自动刷新
             printWriter.write("HTTP/1.1 200 OK \r\n");
-            printWriter.write("Content-Type: text/html\r\n");
-            printWriter.write("Content-Length: "+"成功了".length()+"\r\n");
+            printWriter.write("Content-Type: text/html;charset=utf-8\r\n");
+            printWriter.write("Content-Length: " + "成功了".length() + "\r\n");
             printWriter.write("\r\n");
             printWriter.write("成功了");
         } catch (IOException e) {

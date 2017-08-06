@@ -7,6 +7,7 @@ import com.zkn.fullstacktraining.spring.one.requestresponse.Response;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 
 /**
@@ -44,12 +45,25 @@ public class ProcessSocket implements Runnable {
 //                MspProcessor mspProcessor = new MspProcessor();
 //                mspProcessor.processMsp(response);
 //            }
-            socket.close();
             if("SHUT_DOWN".equals(request.getUri())){
                 System.exit(0);
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
