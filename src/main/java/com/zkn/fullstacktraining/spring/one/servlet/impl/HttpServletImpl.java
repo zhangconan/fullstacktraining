@@ -46,7 +46,7 @@ public class HttpServletImpl implements Servlet {
                             list.add(response);
                         }
                         //如果是字节类型(包含基本类型和包装类)
-                        if (clazzs[i] == byte.class || clazzs[i] == Byte.class) {
+                        else if (clazzs[i] == byte.class || clazzs[i] == Byte.class) {
                             if (parLen < i) {
                                 list.add(null);
                             } else {

@@ -11,7 +11,6 @@ import com.zkn.fullstacktraining.spring.one.resource.CustomClasspathResource;
 import com.zkn.fullstacktraining.spring.one.resource.CustomInputStreamSource;
 import com.zkn.fullstacktraining.spring.one.servlet.Servlet;
 import com.zkn.fullstacktraining.spring.one.utils.AnnotationUtil;
-import com.zkn.fullstacktraining.spring.one.utils.CommonConstant;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;

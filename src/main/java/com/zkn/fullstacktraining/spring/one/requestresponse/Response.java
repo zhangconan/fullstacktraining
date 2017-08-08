@@ -1,9 +1,13 @@
 package com.zkn.fullstacktraining.spring.one.requestresponse;
 
+import com.zkn.fullstacktraining.spring.one.servlet.Cookie;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zkn on 2017/7/28.
@@ -21,6 +25,10 @@ public class Response {
      * 请求类
      */
     private Request request;
+    /**
+     * Cookie信息
+     */
+    private List<Cookie> cookieList = new ArrayList<>(2);
 
     public Response(OutputStream outputStream, Request request) {
         this.outputStream = outputStream;
@@ -75,7 +83,19 @@ public class Response {
             //这里用PrintWriter字符输出流，设置自动刷新
             printWriter.write("HTTP/1.1 200 OK \r\n");
             printWriter.write("Content-Type: text/html;charset=utf-8\r\n");
-            printWriter.write("Content-Length: " + "成功了".length() + "\r\n");
+            printWriter.write("Content-Length: " + "成功了".getBytes().length + "\r\n");
+            if (cookieList != null && !cookieList.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < cookieList.size(); i++) {
+                    //设置多个Cookie
+                    sb.append("Set-Cookie: ").append(cookieList.get(i).getKey()).append("=").append(cookieList.get(i).getValue()).append("\r\n");
+//                    if (i < (cookieList.size() - 1)) {
+//                        sb.append("; ");
+//                    }
+                }
+                //sb.append("\r\n");
+                printWriter.write(sb.toString());
+            }
             printWriter.write("\r\n");
             printWriter.write("成功了");
         } catch (IOException e) {
@@ -83,6 +103,9 @@ public class Response {
         } finally {
             printWriter.close();
         }
+    }
 
+    public void addCookie(Cookie cookie) {
+        cookieList.add(cookie);
     }
 }

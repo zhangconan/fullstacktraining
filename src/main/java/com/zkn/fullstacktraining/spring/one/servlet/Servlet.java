@@ -12,7 +12,7 @@ public interface Servlet {
 
     void init();
 
-    void service(Request request, Response response) throws InvocationTargetException, IllegalAccessException, InstantiationException, Exception;
+    void service(Request request, Response response) throws  Exception;
 
     void destory();
 }

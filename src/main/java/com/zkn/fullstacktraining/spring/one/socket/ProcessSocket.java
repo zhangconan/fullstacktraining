@@ -30,12 +30,12 @@ public class ProcessSocket implements Runnable {
         try {
             request = new Request(socket.getInputStream());
             request.parseRequest();//解析请求信息
-            Response response = new Response(socket.getOutputStream(),request);
+            Response response = new Response(socket.getOutputStream(), request);
             String uri = request.getUri();
-            if(uri !=null && uri.startsWith("/favicon.ico")){
+            if (uri != null && uri.startsWith("/favicon.ico")) {
 
-            }else{
-                ApplicationContext.getServlet().service(request,response);
+            } else {
+                ApplicationContext.getServlet().service(request, response);
             }
 //            if(!StringUtils.isEmpty(uri) && uri.startsWith("/file/uploadFileAction")){
 //
@@ -45,22 +45,16 @@ public class ProcessSocket implements Runnable {
 //                MspProcessor mspProcessor = new MspProcessor();
 //                mspProcessor.processMsp(response);
 //            }
-            if("SHUT_DOWN".equals(request.getUri())){
+            if ("SHUT_DOWN".equals(request.getUri())) {
                 System.exit(0);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
-                socket.close();
+                if (socket != null) {
+                    socket.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
