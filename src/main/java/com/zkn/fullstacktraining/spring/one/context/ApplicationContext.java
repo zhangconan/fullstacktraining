@@ -1,9 +1,11 @@
 package com.zkn.fullstacktraining.spring.one.context;
 
+import com.google.common.collect.Lists;
 import com.zkn.fullstacktraining.spring.one.annotation.CustomComponent;
 import com.zkn.fullstacktraining.spring.one.annotation.CustomController;
 import com.zkn.fullstacktraining.spring.one.annotation.CustomRequestMapping;
 import com.zkn.fullstacktraining.spring.one.annotation.CustomService;
+import com.zkn.fullstacktraining.spring.one.bean.BeanDefinitionInfo;
 import com.zkn.fullstacktraining.spring.one.controller.RequestMappingInfo;
 import com.zkn.fullstacktraining.spring.one.resource.CustomClasspathResource;
 import com.zkn.fullstacktraining.spring.one.resource.CustomInputStreamSource;
@@ -21,16 +23,13 @@ import java.util.*;
  */
 public class ApplicationContext {
 
-
     public static final Map<String, RequestMappingInfo> mappingMap = new HashMap<>();
     /**
      * 所有扫描到的类
      */
-    public static final Map<Class<?>, String> allScanClazz = new HashMap<>();
-    /**
-     * 所有的实例
-     */
-    public static final Map<Class<?>, Object> allInstance = new HashMap<>();
+    private static final Map<Class<?>, BeanDefinitionInfo> allScanClazz = new HashMap<>();
+    private static final List<Class<?>> allClass = Lists.newArrayList();
+
     private static Servlet servlet;
     private CustomInputStreamSource streamSource = null;
 
@@ -61,7 +60,12 @@ public class ApplicationContext {
         }
         componentClazz.addAll(serviceClazz);
         for (Iterator<Class<?>> it = componentClazz.iterator(); it.hasNext(); ) {
-            allScanClazz.put(it.next(), CommonConstant.COMPONENT);
+            Class<?> clazz = it.next();
+            BeanDefinitionInfo beanDefinitionInfo = new BeanDefinitionInfo();
+            beanDefinitionInfo.setClazz(clazz);
+            wrapperSuperClass(clazz, beanDefinitionInfo);
+            allScanClazz.put(clazz, beanDefinitionInfo);
+            allClass.add(clazz);
         }
     }
 
@@ -73,12 +77,14 @@ public class ApplicationContext {
      */
     private void imitateIOC() throws InstantiationException, IllegalAccessException {
         Object instance = null;
-        for (Map.Entry<Class<?>, String> entry : allScanClazz.entrySet()) {
+        BeanDefinitionInfo beanDefinitionInfo = null;
+        for (Map.Entry<Class<?>, BeanDefinitionInfo> entry : allScanClazz.entrySet()) {
             Class clazz = entry.getKey();
-            allInstance.get(clazz);
+            beanDefinitionInfo = entry.getValue();
+            instance = beanDefinitionInfo.getObject();
             if (instance == null) {
                 instance = clazz.newInstance();
-                allInstance.put(clazz, instance);
+                beanDefinitionInfo.setObject(instance);
             }
             Field[] fields = clazz.getDeclaredFields();
             if (fields != null && fields.length > 0) {
@@ -88,15 +94,25 @@ public class ApplicationContext {
                     }
                     if (AnnotationUtil.isAutowire(fields[i])) {
                         Class tmpClass = fields[i].getType();
-                        if (allScanClazz.get(tmpClass) != null) {
-                            if (allScanClazz.get(tmpClass) != null) {
-                                Object tmp = null;
-                                if ((tmp = allInstance.get(tmpClass)) == null) {
-                                    tmp = tmpClass.newInstance();
-                                    allInstance.put(tmpClass, tmp);
+                        if (tmpClass.isInterface()) {
+                            BeanDefinitionInfo tmpBean = null;
+                            for (int j = 0; j < allClass.size(); j++) {
+                                tmpBean = allScanClazz.get(allClass.get(j));
+                                if (tmpClass.isAssignableFrom(tmpBean.getClazz())) {
+                                    if (tmpBean.getObject() == null) {
+                                        Object tmp = tmpBean.getClazz().newInstance();
+                                        tmpBean.setObject(tmp);
+                                    }
+                                    fields[i].set(instance, tmpBean.getObject());
+                                    break;
                                 }
-                                fields[i].set(instance, tmp);
                             }
+                        } else {
+                            BeanDefinitionInfo tmpBean = allScanClazz.get(tmpClass);
+                            if (tmpBean.getObject() == null) {
+                                tmpBean.setObject(tmpBean.getClazz().newInstance());
+                            }
+                            fields[i].set(instance, tmpBean.getObject());
                         }
                     }
                 }
@@ -113,8 +129,11 @@ public class ApplicationContext {
      */
     private void wrapperController(Class<?> clazz) throws IllegalAccessException, InstantiationException {
         Object obj = clazz.newInstance();
-        allScanClazz.put(clazz, CommonConstant.CONTROLLER);
-        allInstance.put(clazz, obj);
+        BeanDefinitionInfo beanDefinitionInfo = new BeanDefinitionInfo();
+        beanDefinitionInfo.setClazz(clazz);
+        beanDefinitionInfo.setObject(obj);
+        wrapperSuperClass(clazz, beanDefinitionInfo);
+        allScanClazz.put(clazz, beanDefinitionInfo);
         String str = "";
         CustomRequestMapping customRequestMapping = null;
         if ((customRequestMapping = isRequestMapping(clazz)) != null) {
@@ -130,12 +149,12 @@ public class ApplicationContext {
             for (Method method : methodArray) {
                 customRequestMapping = method.getAnnotation(CustomRequestMapping.class);
                 if (customRequestMapping != null) {
-                    String strInner = "";
                     requestMappingInfo = new RequestMappingInfo();
                     requestMappingInfo.setClazz(clazz);
                     requestMappingInfo.setMethod(method);
                     requestMappingInfo.setObj(obj);
                     Class<?>[] clazzs = method.getParameterTypes();
+                    String strInner = "";
                     if (clazzs != null) {
                         requestMappingInfo.setFormalParameter(clazzs);
                     }
@@ -152,6 +171,22 @@ public class ApplicationContext {
                 }
             }
         }
+    }
+
+    /**
+     * 组装父类
+     *
+     * @param clazz
+     * @param beanDefinitionInfo
+     */
+    private void wrapperSuperClass(Class<?> clazz, BeanDefinitionInfo beanDefinitionInfo) {
+        Class<?> tmp = clazz;
+        List<Class<?>> superList = Lists.newArrayList();
+        while (tmp.getSuperclass() != null && tmp.getSuperclass() != Object.class) {
+            superList.add(clazz.getSuperclass());
+            tmp = clazz.getSuperclass();
+        }
+        beanDefinitionInfo.setSuperClass(superList);
     }
 
     public CustomRequestMapping isRequestMapping(Class<?> clazz) {
