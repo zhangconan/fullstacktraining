@@ -1,26 +1,27 @@
-package com.zkn.fullstacktraining.spring.one.context;
+package com.zkn.fullstacktraining.spring.one.old;
 
-import com.zkn.fullstacktraining.spring.one.annotation.CustomComponent;
-import com.zkn.fullstacktraining.spring.one.annotation.CustomController;
 import com.zkn.fullstacktraining.spring.one.annotation.CustomRequestMapping;
-import com.zkn.fullstacktraining.spring.one.annotation.CustomService;
+import com.zkn.fullstacktraining.spring.one.context.FileSystemClassLoader;
 import com.zkn.fullstacktraining.spring.one.controller.RequestMappingInfo;
 import com.zkn.fullstacktraining.spring.one.resource.CustomClasspathResource;
 import com.zkn.fullstacktraining.spring.one.resource.CustomInputStreamSource;
 import com.zkn.fullstacktraining.spring.one.servlet.Servlet;
 import com.zkn.fullstacktraining.spring.one.utils.AnnotationUtil;
 import com.zkn.fullstacktraining.spring.one.utils.CommonConstant;
-import org.reflections.Reflections;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Created by zkn on 2017/8/8.
+ * Created by zkn on 2017/7/29.
  */
-public class ApplicationContext {
-
+@Deprecated
+public class ApplicationContextOld {
 
     public static final Map<String, RequestMappingInfo> mappingMap = new HashMap<>();
     /**
@@ -33,8 +34,9 @@ public class ApplicationContext {
     public static final Map<Class<?>, Object> allInstance = new HashMap<>();
     private static Servlet servlet;
     private CustomInputStreamSource streamSource = null;
+    private FileSystemClassLoader classLoader = new FileSystemClassLoader();
 
-    public ApplicationContext(Servlet servlet, String location) {
+    public ApplicationContextOld(Servlet servlet, String location) {
         this.servlet = servlet;
         streamSource = new CustomClasspathResource(location);
     }
@@ -43,26 +45,11 @@ public class ApplicationContext {
         Properties properties = new Properties();
         properties.load(streamSource.getInputStream());
         String componentScan = properties.getProperty("component.scan");
-        wrapperCompontent(componentScan);
+        String filePath = System.getProperty("user.dir");
+        File file = new File(filePath);
+        recursionFile(file, componentScan);
         imitateIOC();
         servlet.init();
-    }
-
-    private void wrapperCompontent(String componentScan) throws InstantiationException, IllegalAccessException {
-        Reflections reflection = new Reflections(componentScan);
-        //扫描所有有CustomController注解的类
-        Set<Class<?>> controllerClazz = reflection.getTypesAnnotatedWith(CustomController.class);
-        //扫描所有有CustomComponent注解的类
-        Set<Class<?>> componentClazz = reflection.getTypesAnnotatedWith(CustomComponent.class);
-        //扫描所有有CustomService注解的类
-        Set<Class<?>> serviceClazz = reflection.getTypesAnnotatedWith(CustomService.class);
-        for (Iterator<Class<?>> it = controllerClazz.iterator(); it.hasNext(); ) {
-            wrapperController(it.next());
-        }
-        componentClazz.addAll(serviceClazz);
-        for (Iterator<Class<?>> it = componentClazz.iterator(); it.hasNext(); ) {
-            allScanClazz.put(it.next(), CommonConstant.COMPONENT);
-        }
     }
 
     /**
@@ -77,15 +64,11 @@ public class ApplicationContext {
             Class clazz = entry.getKey();
             allInstance.get(clazz);
             if (instance == null) {
-                instance = clazz.newInstance();
                 allInstance.put(clazz, instance);
             }
             Field[] fields = clazz.getDeclaredFields();
             if (fields != null && fields.length > 0) {
                 for (int i = 0; i < fields.length; i++) {
-                    if (!fields[i].isAccessible()) {
-                        fields[i].setAccessible(true);
-                    }
                     if (AnnotationUtil.isAutowire(fields[i])) {
                         Class tmpClass = fields[i].getType();
                         if (allScanClazz.get(tmpClass) != null) {
@@ -95,10 +78,40 @@ public class ApplicationContext {
                                     tmp = tmpClass.newInstance();
                                     allInstance.put(tmpClass, tmp);
                                 }
+                                fields[i].setAccessible(true);
                                 fields[i].set(instance, tmp);
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * 递归文件
+     *
+     * @param file
+     * @param componentScan
+     * @throws Exception
+     */
+    public void recursionFile(File file, String componentScan) throws Exception {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File fi : files) {
+                recursionFile(fi, componentScan);
+            }
+        }
+        String filePath = file.getPath();
+        if (filePath.endsWith(".class")) {
+            filePath = filePath.replace("\\", ".");
+            if (filePath.contains("." + componentScan + ".")) {
+                Class clazz = classLoader.loadClass(file.getPath());
+                if (AnnotationUtil.isHandler(clazz)) {
+                    wrapperController(clazz);
+                }
+                if (AnnotationUtil.isComponent(clazz)) {
+                    allScanClazz.put(clazz, CommonConstant.COMPONENT);
                 }
             }
         }

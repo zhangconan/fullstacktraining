@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
+            <version>20.0</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.10</version>
+            <version>0.9.11</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -55,7 +55,7 @@
             <version>1.2.11</version>
         </dependency>
     </dependencies>
-    <name>自己学习的东西</name>
+    <name>全栈</name>
     <build>
         <plugins>
             <plugin>
