@@ -1,1 +1,21 @@
-nihaoa
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<img src="../img/image01.jpg" style="width: 200px;height: 200px"/>
+<img src="../img/image01.jpg" style="width: 200px;height: 200px"/>
+<img src="../img/image01.jpg" style="width: 200px;height: 200px"/>
+<form method="post" name="upload" action="/file/uploadFileAction" enctype="multipart/form-data">
+    上传文件：<input type="file" name="uploadFile" value="浏览"/> <input type="button" value="上传" onclick="doSubmitFile()"/>
+    姓名：<input type="text" name="userName"/><br/>
+    密码：<input type="text" name="passWord"/><br/>
+</form>
+<script type="text/javascript">
+    function doSubmitFile() {
+        document.getElementsByName("upload")[0].submit();
+    }
+</script>
+</body>
+</html>

@@ -41,10 +41,11 @@ public class Response {
                 if (file.canRead()) {
                     fis = new FileInputStream(file);
                     int flag = 0;
-                    byte[] bytes = new byte[1024];
+                    byte[] bytes = new byte[fis.available()];
                     while ((flag = fis.read(bytes)) != -1) {
-                        outputStream.write(bytes);
+                        outputStream.write(bytes, 0, flag);
                     }
+                    outputStream.flush();
                 }
             } else {
                 PrintWriter printWriter = getWriter();
@@ -60,6 +61,7 @@ public class Response {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("IO异常了、、、、、、");
         } finally {
             if (fis != null) {
                 try {

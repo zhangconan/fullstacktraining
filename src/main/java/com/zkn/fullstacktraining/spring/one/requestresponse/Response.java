@@ -2,10 +2,8 @@ package com.zkn.fullstacktraining.spring.one.requestresponse;
 
 import com.zkn.fullstacktraining.spring.one.servlet.Cookie;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,17 +34,24 @@ public class Response {
     }
 
     public void sendStaticResource(String path) {
-        InputStream is = null;
+        FileInputStream fis = null;
         try {
             if ("/".equals(path)) {
                 path = "/static/html/index.html";
+            }else{
+                path = request.getUri();
             }
-            is = this.getClass().getResourceAsStream(path);
-            int flag = 0;
-            byte[] bytes = new byte[1024];
-            if (is != null) {
-                while ((flag = is.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, flag);
+            URL url = this.getClass().getResource(path);
+            if (url != null) {
+                File file = new File(url.getFile());
+                if (file.exists() && !file.isDirectory() && file.canRead()) {
+                    fis = new FileInputStream(file);
+                    int flag = 0;
+                    byte[] bytes = new byte[1024];
+                    while ((flag = fis.read(bytes)) != -1) {
+                        System.out.println(new String(bytes, 0, flag));
+                        outputStream.write(bytes, 0, flag);
+                    }
                 }
             } else {
                 PrintWriter printWriter = getWriter();
@@ -61,9 +66,9 @@ public class Response {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (outputStream != null) {
+            if (fis != null) {
                 try {
-                    outputStream.close();
+                    fis.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

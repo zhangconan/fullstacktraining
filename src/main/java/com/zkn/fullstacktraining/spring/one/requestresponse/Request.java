@@ -180,27 +180,36 @@ public class Request {
                 String[] strArray = tempStr.split("&");
                 Object value = null;
                 for (String str : strArray) {
-                    String[] strArr = str.split("=");
-                    if (strArr.length == 2) {
-                        value = parameterMap.get(strArr[0]);
-                        if (value == null) {
-                            parameterMap.put(strArr[0], strArr[1]);
-                        } else {
-                            if (value instanceof List) {
-                                ((List) value).add(strArr[1]);
-                            } else {
-                                List<String> list = new ArrayList<>(2);
-                                list.add((String) value);
-                                list.add(strArr[1]);
-                                parameterMap.put(strArr[0], strArr[1]);
-                            }
-                        }
-                    }
+                    wrapperParameterValue(str);
                 }
             }
             return;
         }
         uri = s;
+    }
+
+    /**
+     * 组装参数值
+     * @param str
+     */
+    private void wrapperParameterValue(String str) {
+        Object value;
+        String[] strArr = str.split("=");
+        if (strArr.length == 2) {
+            value = parameterMap.get(strArr[0]);
+            if (value == null) {
+                parameterMap.put(strArr[0], strArr[1]);
+            } else {
+                if (value instanceof List) {
+                    ((List) value).add(strArr[1]);
+                } else {
+                    List<String> list = new ArrayList<>(2);
+                    list.add((String) value);
+                    list.add(strArr[1]);
+                    parameterMap.put(strArr[0], strArr[1]);
+                }
+            }
+        }
     }
 
     public String getUri() {
