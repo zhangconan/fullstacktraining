@@ -1,6 +1,8 @@
 package com.zkn.fullstacktraining.spring.one.requestresponse;
 
 
+import com.alibaba.fastjson.JSON;
+
 import java.io.*;
 import java.util.*;
 
@@ -115,16 +117,16 @@ public class Request {
         try {
             //获取请求行 请求行格式 Method URI 协议
             String str = lineNumberReader.readLine();
-            System.out.println("第一行"+str);
-            if(str != null){
+            if (str != null) {
                 String[] strArray = str.split(" ");
                 requestMethod = strArray[0];
                 parseUrl(strArray[1]);
             }
             String headerStr = null;
             String[] strArr = null;
+            //解析头信息
             while ((headerStr = lineNumberReader.readLine()) != null) {
-                if("".equals(headerStr)){
+                if ("".equals(headerStr)) {
                     break;
                 }
                 strArr = headerStr.split(":");
@@ -132,28 +134,91 @@ public class Request {
                     headerMap.put(strArr[0].toLowerCase(), strArr[1].trim());
                 }
             }
-            //parseHeader(lineNumberReader);
+            //如果是POST请求
+            String contentType = null;
+            if ("POST".equals(requestMethod)) {
+                //文件上传
+                if ((contentType = headerMap.get("content-type")) != null && headerMap.get("content-type").startsWith("multipart/form-data")) {
+                    //解析文件上传
+                    parseUploadFile(lineNumberReader, contentType);
+                } else {
+                    //非文件上传
+                    String postParameter = "";
+                    while ((postParameter = lineNumberReader.readLine()) != null) {
+                        if ("".equals(postParameter)) {
+                            break;
+                        }
+                        wrapperParameterValue(postParameter);
+                    }
+                }
+            }
+            System.out.println(JSON.toJSONString(parameterMap));
         } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("执行完了。。。");
     }
 
-    /**
-     * 解析头信息
-     *
-     * @param lineNumberReader
-     */
-    private void parseHeader(BufferedReader lineNumberReader) throws IOException {
-        String headerStr = null;
-        String[] str = null;
-        while ((headerStr = lineNumberReader.readLine()) != null) {
-            if("".equals(str)){
+    private void parseUploadFile(BufferedReader lineNumberReader, String contentType) throws IOException {
+        String str;//文件上传的分割位 这里只处理单个文件的上传
+        String boundary = contentType.substring(contentType.indexOf("boundary") + "boundary=".length());
+        //解析消息体
+        while ((str = lineNumberReader.readLine()) != null) {
+            //解析结束的标记
+            do {
+                //读取boundary中的内容
+                //读取Content-Disposition
+                str = lineNumberReader.readLine();
+                //说明是文件上传
+                if (str.indexOf("Content-Disposition:") >= 0 && str.indexOf("filename") > 0) {
+                    str = str.substring("Content-Disposition:".length());
+                    String[] strs = str.split(";");
+                    String fileName = strs[strs.length - 1].replace("\"", "").split("=")[1];
+                    System.out.println("fileName = " + fileName);
+                    //这一行是Content-Type
+                    lineNumberReader.readLine();
+                    //这一行是换行
+                    lineNumberReader.readLine();
+                    //正式去读文件的内容
+                    BufferedWriter bw = null;
+                    try {
+                        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("G:\\LearnVideo\\fileLoad" + File.separator + fileName), "UTF-8"));
+                        while (true) {
+                            str = lineNumberReader.readLine();
+                            if (str.startsWith("--" + boundary)) {
+                                break;
+                            }
+                            bw.write(str);
+                            bw.newLine();
+                        }
+                        bw.flush();
+                    } catch (Exception e) {
+
+                    } finally {
+                        if (bw != null) {
+                            bw.close();
+                        }
+                    }
+                }
+                if (str.indexOf("Content-Disposition:") >= 0) {
+                    str = str.substring("Content-Disposition:".length());
+                    String[] strs = str.split(";");
+                    String name = strs[strs.length - 1].replace("\"", "").split("=")[1];
+                    lineNumberReader.readLine();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    while (true) {
+                        str = lineNumberReader.readLine();
+                        if (str.startsWith("--" + boundary)) {
+                            break;
+                        }
+                        stringBuilder.append(str);
+                    }
+                    parameterMap.put(name, stringBuilder.toString());
+                }
+            } while (("--" + boundary).equals(str));
+            //解析结束
+            if (str.equals("--" + boundary + "--")) {
                 break;
-            }
-            str = headerStr.split(":");
-            if (str.length == 2) {
-                headerMap.put(str[0].toLowerCase(), str[1]);
             }
         }
     }
@@ -178,7 +243,6 @@ public class Request {
             if (tempStr.length() > (flag + 1)) {
                 tempStr = tempStr.substring(flag + 1, tempStr.length());
                 String[] strArray = tempStr.split("&");
-                Object value = null;
                 for (String str : strArray) {
                     wrapperParameterValue(str);
                 }
@@ -190,6 +254,7 @@ public class Request {
 
     /**
      * 组装参数值
+     *
      * @param str
      */
     private void wrapperParameterValue(String str) {

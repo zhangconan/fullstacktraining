@@ -38,7 +38,7 @@ public class Response {
         try {
             if ("/".equals(path)) {
                 path = "/static/html/index.html";
-            }else{
+            } else {
                 path = request.getUri();
             }
             URL url = this.getClass().getResource(path);
@@ -49,7 +49,6 @@ public class Response {
                     int flag = 0;
                     byte[] bytes = new byte[1024];
                     while ((flag = fis.read(bytes)) != -1) {
-                        System.out.println(new String(bytes, 0, flag));
                         outputStream.write(bytes, 0, flag);
                     }
                 }
