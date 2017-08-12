@@ -93,11 +93,7 @@ public class Response {
                 for (int i = 0; i < cookieList.size(); i++) {
                     //设置多个Cookie
                     sb.append("Set-Cookie: ").append(cookieList.get(i).getKey()).append("=").append(cookieList.get(i).getValue()).append("\r\n");
-//                    if (i < (cookieList.size() - 1)) {
-//                        sb.append("; ");
-//                    }
                 }
-                //sb.append("\r\n");
                 printWriter.write(sb.toString());
             }
             printWriter.write("\r\n");

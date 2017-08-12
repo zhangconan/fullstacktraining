@@ -2,6 +2,7 @@ package com.zkn.fullstacktraining.spring.one.service.impl;
 
 import com.zkn.fullstacktraining.spring.one.annotation.CustomAutowire;
 import com.zkn.fullstacktraining.spring.one.annotation.CustomComponent;
+import com.zkn.fullstacktraining.spring.one.annotation.CustomService;
 import com.zkn.fullstacktraining.spring.one.dao.UserDAO;
 import com.zkn.fullstacktraining.spring.one.domain.UserScope;
 import com.zkn.fullstacktraining.spring.one.service.UserService;
@@ -9,7 +10,7 @@ import com.zkn.fullstacktraining.spring.one.service.UserService;
 /**
  * Created by zkn on 2017/7/29.
  */
-@CustomComponent
+@CustomService
 public class UserServiceImpl implements UserService {
 
     @CustomAutowire

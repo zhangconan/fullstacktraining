@@ -17,7 +17,7 @@ public class BeanDefinitionInfo implements Serializable {
      */
     private Class<?> clazz;
     /**
-     *
+     * 对象
      */
     private Object object;
     /**

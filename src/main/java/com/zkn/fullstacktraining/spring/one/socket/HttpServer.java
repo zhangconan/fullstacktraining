@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class HttpServer {
 
     public static void main(String[] args) {
-        System.out.println(System.getProperty("user.dir"));
+
         await();
     }
 
@@ -31,6 +31,7 @@ public class HttpServer {
             boolean shutDown = false;
             //创建一个服务端
             serverSocket = new ServerSocket(8005, 1, InetAddress.getByName("127.0.0.1"));
+            //用线程池处理请求
             ExecutorService executorService = new ThreadPoolExecutor(10,
                     10, 0L, TimeUnit.SECONDS,
                     new LinkedBlockingDeque<>(),
