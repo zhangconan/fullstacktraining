@@ -11,7 +11,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface CustomAutowire {
-
+    /**
+     * 姓名
+     *
+     * @return
+     */
     String name() default "";
 
+    /**
+     * 是否是必须要注入
+     *
+     * @return
+     */
+    boolean isRequired() default true;
 }

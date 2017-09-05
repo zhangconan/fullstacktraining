@@ -11,6 +11,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface CustomService {
-
-    String value() default "";
+    /**
+     * bean的名字
+     * @return
+     */
+    String name() default "";
 }

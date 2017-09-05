@@ -8,5 +8,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface CustomComponent {
-
+    /**
+     * bean的名字
+     *
+     * @return
+     */
+    String name() default "";
 }

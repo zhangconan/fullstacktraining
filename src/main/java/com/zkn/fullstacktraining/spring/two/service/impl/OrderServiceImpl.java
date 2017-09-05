@@ -17,6 +17,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void testGeneric(OrderDomain orderDomain) {
+        System.out.println(abstractDao);
         abstractDao.testGeneric(orderDomain);
     }
 }

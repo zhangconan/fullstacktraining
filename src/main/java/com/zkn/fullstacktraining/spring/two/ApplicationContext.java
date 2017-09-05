@@ -3,11 +3,14 @@ package com.zkn.fullstacktraining.spring.two;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.zkn.fullstacktraining.spring.one.annotation.CustomAutowire;
+import com.zkn.fullstacktraining.spring.one.annotation.CustomComponent;
 import com.zkn.fullstacktraining.spring.one.annotation.CustomService;
 import com.zkn.fullstacktraining.spring.two.domain.BeanInfo;
 import com.zkn.fullstacktraining.util.StringUtils;
 import org.reflections.Reflections;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -30,6 +33,10 @@ public class ApplicationContext {
      */
     private final static Set<Class<?>> serviceClass = Sets.newHashSet();
     /**
+     * 存放所有带CustomComponent注解的类
+     */
+    private final static Set<Class<?>> componentClass = Sets.newHashSet();
+    /**
      * 所有被管理的bean
      */
     private final static Set<Class<?>> allClass = Sets.newHashSet();
@@ -44,16 +51,88 @@ public class ApplicationContext {
             throw new RuntimeException("扫描包路径不能为空!");
         }
         Reflections reflections = new Reflections(scanPackage);
-        scanCustomService(reflections);
+        scanCustomAnnotation(reflections);
         //注入属性值
         wrapperAutowired();
     }
 
-    private void wrapperAutowired() {
+    /**
+     * 组装Autowire
+     */
+    private void wrapperAutowired() throws IllegalAccessException {
         if (!isInit) {
             throw new RuntimeException("还没有被初始化");
         }
-       //for()
+        for (Iterator<Class<?>> it = allClass.iterator(); it.hasNext(); ) {
+            Class<?> clazz = it.next();
+            //这里只会有一个
+            BeanInfo beanInfo = singleMap.get(clazz);
+            if (beanInfo == null) {
+                continue;
+            }
+            //获取所有的属性
+            Field[] fields = clazz.getDeclaredFields();
+            if (fields != null && fields.length > 0) {
+                for (int i = 0; i < fields.length; i++) {
+                    fields[i].setAccessible(true);
+                    CustomAutowire customAutowire = fields[i].getAnnotation(CustomAutowire.class);
+                    if (customAutowire != null) {
+                        Class<?> fieldClass = fields[i].getType();
+                        BeanInfo fieldInfo = singleMap.get(fieldClass);
+                        if (fieldInfo != null) {
+                            fields[i].set(beanInfo.getObject(), fieldInfo.getObject());
+                        } else {
+                            List<BeanInfo> beanInfList = multiMap.get(fieldClass);
+                            BeanInfo eleBeanInfo = null;
+                            if (beanInfList != null) {
+                                Type type = fields[i].getGenericType();
+                                //说明有泛型
+                                Class<?> actualClass = null;
+                                if (type instanceof ParameterizedType) {
+                                    actualClass = (Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0];
+                                }
+                                //bean的名字
+                                String beanName = customAutowire.name();
+                                //是否是必须要注入值
+                                boolean isRequired = customAutowire.isRequired();
+                                boolean isAutowired = false;
+                                for (int j = 0; j < beanInfList.size(); j++) {
+                                    eleBeanInfo = beanInfList.get(j);
+                                    //先根据名字注入
+                                    if (!StringUtils.isEmpty(beanName)) {
+                                        if (beanName.equals(eleBeanInfo.getBeanName())) {
+                                            //说明已经注入过了
+                                            if (isAutowired) {
+                                                throw new RuntimeException(fieldClass.getName() + "类型bean的名字重复了!");
+                                            }
+                                            fields[i].set(beanInfo.getObject(), eleBeanInfo.getObject());
+                                            isRequired = false;
+                                            isAutowired = true;
+                                        }
+                                    } else {
+                                        //根据泛型注入
+                                        if (actualClass != null) {
+                                            if (eleBeanInfo.getActualType() == actualClass) {
+                                                //说明已经注入过了
+                                                if (isAutowired) {
+                                                    throw new RuntimeException(fieldClass.getName() + "类型bean的名字重复了!");
+                                                }
+                                                fields[i].set(beanInfo.getObject(), eleBeanInfo.getObject());
+                                                isRequired = false;
+                                                isAutowired = true;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (isRequired) {
+                                    throw new RuntimeException(fieldClass.getName() + "类型,没有对应的实现类!");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -61,12 +140,18 @@ public class ApplicationContext {
      *
      * @param reflections
      */
-    private void scanCustomService(Reflections reflections) throws InstantiationException, IllegalAccessException {
+    private void scanCustomAnnotation(Reflections reflections) throws InstantiationException, IllegalAccessException {
         //获取所有带CustomService注解的Service
         serviceClass.addAll(reflections.getTypesAnnotatedWith(CustomService.class));
         allClass.addAll(serviceClass);
         for (Iterator it = serviceClass.iterator(); it.hasNext(); ) {
-            wrapperBeanInfo((Class<?>) it.next());
+            wrapperBeanInfo((Class<?>) it.next(), CustomService.class);
+        }
+        //所有CustomComponent注解的类
+        componentClass.addAll(reflections.getTypesAnnotatedWith(CustomComponent.class));
+        allClass.addAll(componentClass);
+        for (Iterator it = componentClass.iterator(); it.hasNext(); ) {
+            wrapperBeanInfo((Class<?>) it.next(), CustomComponent.class);
         }
         isInit = true;
     }
@@ -75,19 +160,30 @@ public class ApplicationContext {
      * 组装BeanInfo
      *
      * @param clazz
+     * @param annotationClass
      */
-    private void wrapperBeanInfo(Class<?> clazz) throws IllegalAccessException, InstantiationException {
+    private void wrapperBeanInfo(Class<?> clazz, Class<?> annotationClass) throws IllegalAccessException, InstantiationException {
         if (clazz == null || clazz == Object.class) {
             return;
         }
         //说明不在任何一个里面
         if (singleMap.get(clazz) == null && multiMap.get(clazz) == null) {
-            BeanInfo beanInfo = getBeanInfo(clazz);
+            BeanInfo beanInfo = getBeanInfo(clazz, annotationClass);
             singleMap.put(clazz, beanInfo);
         }
+//        else if (singleMap.get(clazz) != null) {
+//            List<BeanInfo> listBean = new ArrayList<>(2);
+//            BeanInfo beanInfo = getBeanInfo(clazz, annotationClass);
+//            listBean.add(beanInfo);
+//            multiMap.put(clazz, listBean);
+//            singleMap.remove(clazz);
+//        } else if (singleMap.get(clazz) == null && multiMap.get(clazz) != null) {
+//            BeanInfo beanInfo = getBeanInfo(clazz, annotationClass);
+//            multiMap.get(clazz).add(beanInfo);
+//        }
     }
 
-    private BeanInfo getBeanInfo(Class<?> clazz) throws InstantiationException, IllegalAccessException {
+    private BeanInfo getBeanInfo(Class<?> clazz, Class<?> annotationClass) throws InstantiationException, IllegalAccessException {
         BeanInfo beanInfo = new BeanInfo();
         //此class是否是接口
         if (clazz.isInterface()) {
@@ -114,15 +210,21 @@ public class ApplicationContext {
         }
         beanInfo.setParentClass(parentClass);
         //查看继承的类是否有泛型
-        ParameterizedType parameterizedType = (ParameterizedType) clazz.getGenericSuperclass();
-        if (parameterizedType != null) {
-            beanInfo.setActualType((Class) parameterizedType.getActualTypeArguments()[0]);
+        Type type = clazz.getGenericSuperclass();
+        if (type instanceof ParameterizedType) {
+            beanInfo.setActualType((Class) ((ParameterizedType) type).getActualTypeArguments()[0]);
         }
         //实现的接口是否有泛型
         //@TODO
         Type[] types = clazz.getGenericInterfaces();
         //设置bean的名称
-        String beanName = clazz.getAnnotation(CustomService.class).value();
+        String beanName = "";
+        if (annotationClass == CustomComponent.class) {
+            beanName = clazz.getAnnotation(CustomComponent.class).name();
+        }
+        if (annotationClass == CustomService.class) {
+            beanName = clazz.getAnnotation(CustomService.class).name();
+        }
         if ("".equals(beanName)) {
             beanName = clazz.getSimpleName();
             beanName = beanName.substring(0, 1).toLowerCase() + beanName.substring(1);
@@ -177,15 +279,33 @@ public class ApplicationContext {
             singleMap.put(superClass, beanInfo);
         }
         //如果singleMap中已经存在这个类型的bean了
-        if (singleMap.get(superClass) != null) {
+        else if (singleMap.get(superClass) != null) {
             List<BeanInfo> multyList = new ArrayList<>(2);
             multyList.add(beanInfo);
+            multyList.add(singleMap.get(superClass));
             multiMap.put(superClass, multyList);
             singleMap.remove(superClass);
         }
         //说明已经存在这种类型的bean了
-        if (singleMap.get(superClass) == null && multiMap.get(superClass) != null) {
+        else if (singleMap.get(superClass) == null && multiMap.get(superClass) != null) {
             multiMap.get(superClass).add(beanInfo);
         }
+    }
+
+    /**
+     * 获取Bean
+     *
+     * @param clazz
+     * @return
+     */
+    public Object getBean(Class<?> clazz) {
+        if (!isInit) {
+            throw new RuntimeException("系统还没有初始化!");
+        }
+        BeanInfo beanInfo = singleMap.get(clazz);
+        if (beanInfo != null) {
+            return beanInfo.getObject();
+        }
+        return null;
     }
 }

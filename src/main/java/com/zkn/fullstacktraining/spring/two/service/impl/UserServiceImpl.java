@@ -17,6 +17,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void testGeneric(UserInfoDomain orderDomain) {
+        System.out.println(abstractDao);
         abstractDao.testGeneric(orderDomain);
     }
 }
