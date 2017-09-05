@@ -33,8 +33,12 @@ public class ApplicationContext {
      * 所有被管理的bean
      */
     private final static Set<Class<?>> allClass = Sets.newHashSet();
+    /**
+     * 是否初始化过
+     */
+    private boolean isInit = false;
 
-    public static void init(String scanPackage) throws IllegalAccessException, InstantiationException {
+    public void init(String scanPackage) throws IllegalAccessException, InstantiationException {
 
         if (StringUtils.isEmpty(scanPackage)) {
             throw new RuntimeException("扫描包路径不能为空!");
@@ -42,6 +46,14 @@ public class ApplicationContext {
         Reflections reflections = new Reflections(scanPackage);
         scanCustomService(reflections);
         //注入属性值
+        wrapperAutowired();
+    }
+
+    private void wrapperAutowired() {
+        if (!isInit) {
+            throw new RuntimeException("还没有被初始化");
+        }
+       //for()
     }
 
     /**
@@ -49,13 +61,14 @@ public class ApplicationContext {
      *
      * @param reflections
      */
-    private static void scanCustomService(Reflections reflections) throws InstantiationException, IllegalAccessException {
+    private void scanCustomService(Reflections reflections) throws InstantiationException, IllegalAccessException {
         //获取所有带CustomService注解的Service
         serviceClass.addAll(reflections.getTypesAnnotatedWith(CustomService.class));
         allClass.addAll(serviceClass);
         for (Iterator it = serviceClass.iterator(); it.hasNext(); ) {
             wrapperBeanInfo((Class<?>) it.next());
         }
+        isInit = true;
     }
 
     /**
@@ -63,7 +76,7 @@ public class ApplicationContext {
      *
      * @param clazz
      */
-    private static void wrapperBeanInfo(Class<?> clazz) throws IllegalAccessException, InstantiationException {
+    private void wrapperBeanInfo(Class<?> clazz) throws IllegalAccessException, InstantiationException {
         if (clazz == null || clazz == Object.class) {
             return;
         }
@@ -74,7 +87,7 @@ public class ApplicationContext {
         }
     }
 
-    private static BeanInfo getBeanInfo(Class<?> clazz) throws InstantiationException, IllegalAccessException {
+    private BeanInfo getBeanInfo(Class<?> clazz) throws InstantiationException, IllegalAccessException {
         BeanInfo beanInfo = new BeanInfo();
         //此class是否是接口
         if (clazz.isInterface()) {
@@ -130,7 +143,7 @@ public class ApplicationContext {
      * @param beanInfo
      * @param superClass
      */
-    private static void wrapperSuperBeanInfo(BeanInfo beanInfo, Class<?> superClass) {
+    private void wrapperSuperBeanInfo(BeanInfo beanInfo, Class<?> superClass) {
         Class<?> clazz = superClass;
         if (clazz == null) {
             return;
@@ -158,7 +171,7 @@ public class ApplicationContext {
      * @param beanInfo
      * @param superClass
      */
-    private static void wrapperAllSuperBeanInfo(BeanInfo beanInfo, Class<?> superClass) {
+    private void wrapperAllSuperBeanInfo(BeanInfo beanInfo, Class<?> superClass) {
         //两个里面都没有这种类型的bean
         if (singleMap.get(superClass) == null && multiMap.get(superClass) == null) {
             singleMap.put(superClass, beanInfo);
