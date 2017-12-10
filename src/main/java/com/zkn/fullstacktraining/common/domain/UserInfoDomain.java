@@ -1,28 +1,26 @@
 package com.zkn.fullstacktraining.common.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 
 /**
- * Created by zkn on 2017/9/4.
+ *
+ * @author zkn
+ * @date 2017/9/4
  */
+@Getter
+@Setter
+@ToString
 public class UserInfoDomain implements Serializable {
     /**
      * 用户名
      */
     private String userName;
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    @Override
-    public String toString() {
-        return "UserInfoDomain{" +
-                "userName='" + userName + '\'' +
-                '}';
-    }
+    /**
+     * 密码
+     */
+    private String passWord;
 }

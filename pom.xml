@@ -11,6 +11,7 @@
         <java.encoding>UTF-8</java.encoding>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>${java.encoding}</project.build.sourceEncoding>
+        <lombok-version>1.16.18</lombok-version>
     </properties>
     <dependencies>
         <dependency>
@@ -53,6 +54,12 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok-version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <name>全栈</name>
